@@ -1,0 +1,109 @@
+@require "./node_modules/normalize.css/normalize.css"
+@require "./node_modules/codemirror/lib/codemirror.css"
+
+@font-face{
+  font-family 'Fira Code'
+  src url('fonts/FiraCode-Light.eot')
+  src url('fonts/FiraCode-Light.eot') format('embedded-opentype'), url('fonts/FiraCode-Light.woff2') format('woff2'), url('fonts/FiraCode-Light.woff') format('woff'), url('fonts/FiraCode-Light.ttf') format('truetype');
+  font-weight normal
+  font-style normal
+}
+
+$primary = #DFE1E8
+$danger = #A90015
+$bg1 = #16232A
+$bg2 = #1A2B34
+$bg3 = #465B66
+
+$purple = #C792C7
+$blue = #6297D0
+$green = #97C990
+$orange = #FD9148
+$red = #F05D61
+
+*
+  box-sizing border-box
+
+html, body
+  margin 0
+  padding 0
+  height 100%
+
+body
+  background-color $bg1
+  color $primary
+  font-family Helvetica, sans-serif
+  font-size 18px
+
+.wrapper
+  height 100%
+
+
+#close,
+#upload
+  position absolute
+  background $bg3
+  color $bg1
+  text-decoration none
+  z-index 2
+  text-align center
+  line-height 36px
+  height 36px
+  width 36px
+  border-radius 3px
+
+#close
+  top 5px
+  right 5px
+
+#upload
+  top 5px
+  right 46px
+
+.CodeMirror
+  background $bg1
+  color $primary
+  font-family 'Fira Code', monospace
+  font-size 14px
+  line-height 20px
+  height 100%
+  .CodeMirror-selected
+    background rgba(255, 255, 255, 0.1)
+  .CodeMirror-gutters
+    background $bg1
+    border-color $bg2
+  .CodeMirror-guttermarker
+    color $red
+  .CodeMirror-cursor
+    border-left 1px solid $primary
+
+  span.cm-comment
+    color $bg3
+
+  span.cm-atom,
+  span.cm-number
+    color $orange
+  span.cm-property,
+  span.cm-attribute,
+  span.cm-variable-2
+    color $blue
+  span.cm-keyword,
+  span.cm-link
+    color $purple
+  span.cm-string,
+  span.cm-string-2
+    color $green
+  span.cm-variable,
+  span.cm-bracket
+    color $primary
+  span.cm-def,
+  span.cm-tag
+    color $red
+  span.cm-error
+    color $danger
+
+  .CodeMirror-activeline-background
+    background $bg1
+  .CodeMirror-matchingbracket
+    text-decoration underline
+    color white !important
