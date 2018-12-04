@@ -1,13 +1,12 @@
-@require "./node_modules/normalize.css/normalize.css"
-@require "./node_modules/codemirror/lib/codemirror.css"
+@require "../node_modules/normalize.css/normalize.css"
+@require "../node_modules/codemirror/lib/codemirror.css"
 
-@font-face{
+@font-face
   font-family 'Fira Code'
-  src url('fonts/FiraCode-Light.eot')
-  src url('fonts/FiraCode-Light.eot') format('embedded-opentype'), url('fonts/FiraCode-Light.woff2') format('woff2'), url('fonts/FiraCode-Light.woff') format('woff'), url('fonts/FiraCode-Light.ttf') format('truetype');
+  src url('../fonts/FiraCode-Light.eot')
+  src url('../fonts/FiraCode-Light.eot') format('embedded-opentype'), url('../fonts/FiraCode-Light.woff2') format('woff2'), url('../fonts/FiraCode-Light.woff') format('woff'), url('../fonts/FiraCode-Light.ttf') format('truetype');
   font-weight normal
   font-style normal
-}
 
 $primary = #DFE1E8
 $danger = #A90015
@@ -84,8 +83,7 @@ body
   span.cm-number
     color $orange
   span.cm-property,
-  span.cm-attribute,
-  span.cm-variable-2
+  span.cm-attribute
     color $blue
   span.cm-keyword,
   span.cm-link
@@ -93,11 +91,12 @@ body
   span.cm-string,
   span.cm-string-2
     color $green
+  span.cm-def,
+  span.cm-variable-2
+    color $primary
+  span.cm-tag,
   span.cm-variable,
   span.cm-bracket
-    color $primary
-  span.cm-def,
-  span.cm-tag
     color $red
   span.cm-error
     color $danger

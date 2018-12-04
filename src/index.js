@@ -21,8 +21,6 @@ const update = (next) => {
 const Hub = require('odo-hub')
 let state = {}
 let params = {
-  websocket: { isconnected: false },
-  lake: {},
   page: 'default'
 }
 const hub = Hub()
@@ -45,24 +43,31 @@ hub.on('update', p => {
   exe.run(inject.one(`page:${params.page}`).query(state, params) || {})
 })
 
-let currentversion = null
-const onConnect = () => socket.call('com.tumu.version', null,  (params) => {
-  const version = params.argsList[0]
-  if (currentversion != null && currentversion != version) location.reload(true)
-  currentversion = version
-  hub.emit('update', { websocket: { isconnected: true } })
-})
-const onDisconnect = () => hub.emit('update', { websocket: { isconnected: false } })
-const wampy = require('wampy')
-const socket = new wampy.Wampy({
-  realm: 'tumu.ide',
-  autoReconnect: true,
-  maxRetries: Infinity,
-  onConnect: onConnect,
-  onClose: onDisconnect,
-  onReconnect: onDisconnect,
-  onReconnectSuccess: onConnect
-})
+const test = () => {
+  const connection = require('./connection')
+  const fixHostUrl = require('./fixhosturl')
+  const host = fixHostUrl('localhost:8081')
+  const emailAddress = 'thomas.coats@gmail.com'
+  const socket = connection(host, null, {
+    open: () => socket.send('login', emailAddress),
+    login_complete: (token) => {
+      socket.close()
+      console.log('Logged in', token)
+    },
+    login_secret_generated: (secret) => {
+      console.log('Generated secret', secret)
+    },
+    login_challenge: () => {
+      console.log('Login challenge')
+    },
+    login_failure: () => {
+      socket.close()
+      console.error('Login failure')
+    }
+  })
+}
+test()
+
 
 // execute pods
 for (let pod of inject.many('pod')) pod(hub, exe, socket)

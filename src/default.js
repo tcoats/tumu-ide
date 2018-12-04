@@ -16,8 +16,6 @@ inject('page:default', ql.component({
       h('div', { on: { click: click } }, 'Hello')
     ])
     return h('div.wrapper', [
-      h('a#upload', { attrs: { title: 'Upload', href: '#' } }, '↑'),
-      h('a#close', { attrs: { title: 'Close', href: '#' } }, '✕'),
       h('div', {
         hook: {
           insert: (vnode) => {
@@ -78,13 +76,11 @@ inject('page:default', ql.component({
                 lineWrapping: true,
                 lineNumbers: true
               })
-          },
-          destroy: (vnode) => {
-            console.log(vnode.data)
-            //vnode.elm
           }
         }
-      })
+      }),
+      h('a#upload', { attrs: { title: 'Upload', href: '#' } }, '↑'),
+      h('a#close', { attrs: { title: 'Close', href: '#' } }, '✕')
     ])
   }
 }))
