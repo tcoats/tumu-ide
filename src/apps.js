@@ -40,14 +40,14 @@ inject('page:apps', ql.component({
       if (w.workspaceId == params.workspace)
         workspace = w
     if (!workspace)
-      return inject('page:error')(state, { message: 'Workspace not found' }, hub)
+      return inject.one('page:error')(state, { message: 'Workspace not found' }, hub)
     return h('div.wrapper', [
       h('h1', 'Applications'),
       h('ul.select', workspace.apps.map((app) => {
         const action = (e) => {
           e.preventDefault()
           e.stopPropagation()
-          console.log('action')
+          console.log('TODO: App actions')
         }
         return h('li', h('a', { attrs: { href: `/host/${encodeURIComponent(params.host)}/workspace/${workspace.workspaceId}/app/${app.appId}/` } }, [
           `${app.name} · ${app.appId}`,

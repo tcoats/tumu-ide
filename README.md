@@ -1,6 +1,13 @@
 # Tumu IDE
 A web based development environment to control and edit apps on a tumu host.
 
+```bash
+yarn add global http-server
+cd docs
+http-server
+```
+
+
 # Authentication
 - [ ] Save token to local storage
 - [ ] generate QR code for Authy

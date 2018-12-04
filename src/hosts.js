@@ -45,7 +45,7 @@ inject('page:hosts', ql.component({
         const action = (e) => {
           e.preventDefault()
           e.stopPropagation()
-          console.log('action')
+          console.log('TODO: Host actions')
         }
         return h('li', h('a', { attrs: { href: `/host/${encodeURIComponent(host)}/` }}, [
           host,

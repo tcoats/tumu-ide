@@ -148,7 +148,7 @@ inject('page:login', ql.component({
             value: params.emailAddress } }),
         h('div.page-actions', [
           h('a.btn', { attrs: { href: '../' } }, 'Cancel'),
-          h('button.btn', { on: { click: login } }, 'Login')
+          h('button.btn', 'Login')
         ])
       ])
     ])

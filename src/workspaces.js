@@ -47,14 +47,14 @@ inject('page:workspaces', ql.component({
   },
   render: (state, params, hub) => {
     if (!state.status)
-      return inject('page:error')(state, { message: 'Host not found' }, hub)
+      return inject.one('page:error')(state, { message: 'Host not found' }, hub)
     return h('div.wrapper', [
       h('h1', `Workspaces`),
       h('ul.select', state.status.workspaces.map((workspace) => {
         const action = (e) => {
           e.preventDefault()
           e.stopPropagation()
-          console.log('action')
+          console.log('TODO: Workspace actions')
         }
         return h('li', h('a', { attrs: { href: `/host/${encodeURIComponent(params.host)}/workspace/${workspace.workspaceId}/` } }, [
           `${workspace.name} · ${workspace.workspaceId}`,
