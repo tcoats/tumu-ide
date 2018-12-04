@@ -2,15 +2,22 @@
 A web based development environment to control and edit apps on a tumu host.
 
 ```bash
-yarn add global http-server
-cd docs
-http-server
+# Install
+yarn
+
+# Run
+yarn start
+
+# Debug
+yarn run debug
+
+# Deploy
+yarn run deploy
 ```
 
-
 # Authentication
-- [ ] Save token to local storage
-- [ ] generate QR code for Authy
+- [x] Save token to local storage
+- [x] generate QR code for Authy
 
 # Dashboard
 - [ ] Create workspace

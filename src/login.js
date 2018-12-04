@@ -3,6 +3,7 @@ const ql = require('odoql2')
 const inject = require('injectinto')
 const route = require('odo-route')
 const qrcode = require('qrcode')
+const page = require('page')
 
 const connection = require('./connection')
 const fixHostUrl = require('./fixhosturl')
@@ -56,7 +57,7 @@ inject('pod', (hub, exe) => {
           token: token
         })
         .then(() => hub.emit('select host', host))
-        .then(() => page('../'))
+        .then(() => page('/'))
       },
       login_failure: (err) => {
         socket.close()
@@ -111,7 +112,7 @@ inject('page:login', ql.component({
             attrs: { type: 'text', placeholder: 'e.g. 123456' },
             props: { value: params.code || '' }}),
           h('div.page-actions', [
-            h('a.btn', { attrs: { href: '../' } }, 'Cancel'),
+            h('a.btn', { attrs: { href: '/' } }, 'Cancel'),
             h('button.btn', { on: { click: loginCode } }, 'Login')
           ])
         ])
@@ -147,7 +148,7 @@ inject('page:login', ql.component({
             placeholder: 'e.g. bob@example.com',
             value: params.emailAddress } }),
         h('div.page-actions', [
-          h('a.btn', { attrs: { href: '../' } }, 'Cancel'),
+          h('a.btn', { attrs: { href: '/' } }, 'Cancel'),
           h('button.btn', 'Login')
         ])
       ])

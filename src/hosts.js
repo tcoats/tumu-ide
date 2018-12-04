@@ -48,7 +48,7 @@ inject('page:hosts', ql.component({
           console.log('TODO: Host actions')
         }
         return h('li', h('a', { attrs: { href: `/host/${encodeURIComponent(host)}/` }}, [
-          host,
+          `${host} · ${state.hosts[host].emailAddress}`,
           h('div.action', { on: { click: action } }, '…')
         ]))
       })),
