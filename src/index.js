@@ -1,7 +1,12 @@
 import classes from './index.styl'
 
 // extension points
-require('./default')
+require('./hosts')
+require('./workspaces')
+require('./apps')
+require('./editor')
+require('./login')
+require('./error')
 
 // snabbdom
 const patch = require('snabbdom').init([
@@ -20,9 +25,7 @@ const update = (next) => {
 // odo
 const Hub = require('odo-hub')
 let state = {}
-let params = {
-  page: 'default'
-}
+let params = {}
 const hub = Hub()
 
 // relay
@@ -43,34 +46,22 @@ hub.on('update', p => {
   exe.run(inject.one(`page:${params.page}`).query(state, params) || {})
 })
 
-const test = () => {
-  const connection = require('./connection')
-  const fixHostUrl = require('./fixhosturl')
-  const host = fixHostUrl('localhost:8081')
-  const emailAddress = 'thomas.coats@gmail.com'
-  const socket = connection(host, null, {
-    open: () => socket.send('login', emailAddress),
-    login_complete: (token) => {
-      socket.close()
-      console.log('Logged in', token)
-    },
-    login_secret_generated: (secret) => {
-      console.log('Generated secret', secret)
-    },
-    login_challenge: () => {
-      console.log('Login challenge')
-    },
-    login_failure: () => {
-      socket.close()
-      console.error('Login failure')
-    }
-  })
-}
-test()
-
+// url handling
+const page = require('page')
+const route = require('odo-route')
+page('*', (e, next) => {
+  params = {}
+  hub.emit('update', route.exec(e.canonicalPath, () => {
+    hub.emit('update', {
+      page: 'error',
+      message: `${e.canonicalPath} not found`
+    })
+  }))
+  window.scrollTo(0, 0)
+})
 
 // execute pods
-for (let pod of inject.many('pod')) pod(hub, exe, socket)
+for (let pod of inject.many('pod')) pod(hub, exe)
 
 // start relay
-hub.emit('update')
+page.start()

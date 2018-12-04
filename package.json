@@ -14,9 +14,10 @@
     "injectinto": "^1.6.0",
     "normalize.css": "^8.0.1",
     "odo-hub": "^4.0.3",
-    "odo-route": "^1.7.0",
+    "odo-route": "^1.7.1",
     "odoql2": "^2.1.0",
     "page": "^1.11.3",
+    "qrcode": "^1.3.2",
     "snabbdom": "^0.7.2",
     "stylus": "^0.54.5"
   },

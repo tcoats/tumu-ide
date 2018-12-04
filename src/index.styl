@@ -37,27 +37,88 @@ body
 .wrapper
   height 100%
 
+h1
+  font-weight normal
+  padding 10px 15px
+  margin 0
+  font-size 24px
 
-#close,
-#upload
-  position absolute
+input[type=text]
+  background-color $bg1
+  color $primary
+  border none
+  border 1px solid $bg3
+  border-radius 4px
+  display block
+  width 100%
+  padding 10px 15px
+  margin-bottom 15px
+  &:focus
+    border-color $primary
+    outline none
+
+label
+  display block
+  padding 10px 0
+  text-transform uppercase
+
+form
+  margin 0 auto
+  max-width 400px
+
+.btn
+  display inline-block
   background $bg3
   color $bg1
   text-decoration none
-  z-index 2
   text-align center
   line-height 36px
   height 36px
-  width 36px
+  min-width 36px
+  border none
+  cursor pointer
   border-radius 3px
+  padding 0 15px
+  &.icon
+    padding 0 8px
 
-#close
-  top 5px
-  right 5px
+.page-actions
+  position absolute
+  z-index 2
+  top 0
+  right 0
+  .btn
+    margin 5px 5px 0 0
 
-#upload
-  top 5px
-  right 46px
+.select
+  list-style none
+  margin 0
+  padding 0
+  li
+    & > div,
+    & > a
+      padding 10px 15px
+      position relative
+    a
+      display block
+      color $primary
+      text-decoration none
+      &:hover
+        background-color $bg3
+    div.action
+      padding 10px 15px
+      position absolute
+      right 0
+      top 0
+  li + li
+    border-top 1px solid $bg3
+
+img.secret
+  width 100%
+
+div.secret
+  font-size 11px
+  margin-bottom 15px
 
 .CodeMirror
   background $bg1
