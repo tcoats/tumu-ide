@@ -75,7 +75,7 @@ inject('page:editor', ql.component({
     const hosts = get('hosts', {})
     if (!hosts[params.host])
       return inject.one('page:error')(state, { message: 'Host not found' }, hub)
-    if (!code)
+    if (code == null || code == undefined)
       return inject.one('page:error')(state, { message: 'App not found' }, hub)
     const host = hosts[params.host]
     const upload = (e) => {
