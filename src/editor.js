@@ -70,7 +70,6 @@ inject('page:editor', ql.component({
     }
   },
   render: (state, params, hub) => {
-    console.log(state.code)
     const code = params.code || state.code
     const hosts = get('hosts', {})
     if (!hosts[params.host])
@@ -86,6 +85,10 @@ inject('page:editor', ql.component({
         app: params.app,
         code: code
       })
+    }
+    const refresh = (e) => {
+      e.preventDefault()
+      hub.emit('refresh all', { code: null })
     }
     return h('div.wrapper', [
       h('div', {
@@ -104,13 +107,26 @@ inject('page:editor', ql.component({
                 lineNumbers: true
               })
             vnode.data.codemirror.on('change', (instance) => {
+              if (instance.issetting) {
+                instance.issetting = false
+                return
+              }
               hub.emit('update', { code: instance.getValue() })
             })
+          },
+          postpatch: (oldVnode, vnode) => {
+            const instance = oldVnode.data.codemirror
+            vnode.data.codemirror = instance
+            if (params.code == null || params.code == undefined) {
+              instance.issetting = true
+              instance.setValue(code)
+            }
           }
         }
       }),
       h('div.page-actions', [
         h('a.btn.icon', { on: { click: upload }, attrs: { title: 'Upload', href: '#' } }, '↑'),
+        h('a.btn.icon', { on: { click: refresh }, attrs: { href: '#' } }, '↻'),
         h('a.btn.icon', { attrs: { title: 'Close', href: `/host/${encodeURIComponent(params.host)}/workspace/${params.workspace}/` } }, '✕')
       ])
     ])

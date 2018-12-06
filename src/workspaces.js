@@ -48,6 +48,10 @@ inject('page:workspaces', ql.component({
   render: (state, params, hub) => {
     if (!state.status)
       return inject.one('page:error')(state, { message: 'Host not found' }, hub)
+    const refresh = (e) => {
+      e.preventDefault()
+      hub.emit('refresh all')
+    }
     return h('div.wrapper', [
       h('h1', `Workspaces`),
       h('ul.select', state.status.workspaces.map((workspace) => {
@@ -62,6 +66,8 @@ inject('page:workspaces', ql.component({
         ]))
       })),
       h('div.page-actions', [
+        h('a.btn.icon', { on: { click: refresh }, attrs: { href: '#' } }, '↻'),
+        //h('a.btn.icon', { attrs: { href: '#' } }, '＋'),
         h('a.btn.icon', { attrs: { href: '/' } }, '✕')
       ])
     ])

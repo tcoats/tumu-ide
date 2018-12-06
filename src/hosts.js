@@ -27,6 +27,10 @@ inject('pod', (hub, exe) => {
     delete hosts[host]
     set('hosts', hosts)
   })
+  hub.on('refresh all', (p) => {
+    exe.clear()
+    hub.emit('update', p)
+  })
 })
 
 route('/', (p) => {
@@ -40,6 +44,10 @@ inject('page:hosts', ql.component({
     }
   },
   render: (state, params, hub) => {
+    const refresh = (e) => {
+      e.preventDefault()
+      hub.emit('refresh all')
+    }
     return h('div.wrapper', [
       h('h1', 'Choose host'),
       h('ul.select', Object.keys(state.hosts).map((host) => {
@@ -54,6 +62,7 @@ inject('page:hosts', ql.component({
         ]))
       })),
       h('div.page-actions', [
+        h('a.btn.icon', { on: { click: refresh }, attrs: { href: '#' } }, '↻'),
         h('a.btn', { attrs: { href: './login/' } }, 'Connect')
       ])
     ])

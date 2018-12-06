@@ -2342,6 +2342,10 @@ inject('pod', function (hub, exe) {
     delete hosts[host];
     set('hosts', hosts);
   });
+  hub.on('refresh all', function (p) {
+    exe.clear();
+    hub.emit('update', p);
+  });
 });
 route('/', function (p) {
   return {
@@ -2355,6 +2359,11 @@ inject('page:hosts', ql.component({
     };
   },
   render: function render(state, params, hub) {
+    var refresh = function refresh(e) {
+      e.preventDefault();
+      hub.emit('refresh all');
+    };
+
     return h('div.wrapper', [h('h1', 'Choose host'), h('ul.select', Object.keys(state.hosts).map(function (host) {
       var action = function action(e) {
         e.preventDefault();
@@ -2371,7 +2380,14 @@ inject('page:hosts', ql.component({
           click: action
         }
       }, '…')]));
-    })), h('div.page-actions', [h('a.btn', {
+    })), h('div.page-actions', [h('a.btn.icon', {
+      on: {
+        click: refresh
+      },
+      attrs: {
+        href: '#'
+      }
+    }, '↻'), h('a.btn', {
       attrs: {
         href: './login/'
       }
@@ -2492,6 +2508,12 @@ inject('page:workspaces', ql.component({
     if (!state.status) return inject.one('page:error')(state, {
       message: 'Host not found'
     }, hub);
+
+    var refresh = function refresh(e) {
+      e.preventDefault();
+      hub.emit('refresh all');
+    };
+
     return h('div.wrapper', [h('h1', "Workspaces"), h('ul.select', state.status.workspaces.map(function (workspace) {
       var action = function action(e) {
         e.preventDefault();
@@ -2509,6 +2531,14 @@ inject('page:workspaces', ql.component({
         }
       }, '…')]));
     })), h('div.page-actions', [h('a.btn.icon', {
+      on: {
+        click: refresh
+      },
+      attrs: {
+        href: '#'
+      }
+    }, '↻'), //h('a.btn.icon', { attrs: { href: '#' } }, '＋'),
+    h('a.btn.icon', {
       attrs: {
         href: '/'
       }
@@ -2586,6 +2616,12 @@ inject('page:apps', ql.component({
     if (!workspace) return inject.one('page:error')(state, {
       message: 'Workspace not found'
     }, hub);
+
+    var refresh = function refresh(e) {
+      e.preventDefault();
+      hub.emit('refresh all');
+    };
+
     return h('div.wrapper', [h('h1', 'Applications'), h('ul.select', workspace.apps.map(function (app) {
       var action = function action(e) {
         e.preventDefault();
@@ -2603,6 +2639,14 @@ inject('page:apps', ql.component({
         }
       }, '…')]));
     })), h('div.page-actions', [h('a.btn.icon', {
+      on: {
+        click: refresh
+      },
+      attrs: {
+        href: '#'
+      }
+    }, '↻'), //h('a.btn.icon', { attrs: { href: '#' } }, '＋'),
+    h('a.btn.icon', {
       attrs: {
         href: "/host/".concat(encodeURIComponent(params.host), "/")
       }
@@ -13325,7 +13369,6 @@ inject('page:editor', ql.component({
     };
   },
   render: function render(state, params, hub) {
-    console.log(state.code);
     var code = params.code || state.code;
     var hosts = get('hosts', {});
     if (!hosts[params.host]) return inject.one('page:error')(state, {
@@ -13346,6 +13389,13 @@ inject('page:editor', ql.component({
       });
     };
 
+    var refresh = function refresh(e) {
+      e.preventDefault();
+      hub.emit('refresh all', {
+        code: null
+      });
+    };
+
     return h('div.wrapper', [h('div', {
       hook: {
         insert: function insert(vnode) {
@@ -13360,10 +13410,24 @@ inject('page:editor', ql.component({
             lineNumbers: true
           });
           vnode.data.codemirror.on('change', function (instance) {
+            if (instance.issetting) {
+              instance.issetting = false;
+              return;
+            }
+
             hub.emit('update', {
               code: instance.getValue()
             });
           });
+        },
+        postpatch: function postpatch(oldVnode, vnode) {
+          var instance = oldVnode.data.codemirror;
+          vnode.data.codemirror = instance;
+
+          if (params.code == null || params.code == undefined) {
+            instance.issetting = true;
+            instance.setValue(code);
+          }
         }
       }
     }), h('div.page-actions', [h('a.btn.icon', {
@@ -13375,6 +13439,13 @@ inject('page:editor', ql.component({
         href: '#'
       }
     }, '↑'), h('a.btn.icon', {
+      on: {
+        click: refresh
+      },
+      attrs: {
+        href: '#'
+      }
+    }, '↻'), h('a.btn.icon', {
       attrs: {
         title: 'Close',
         href: "/host/".concat(encodeURIComponent(params.host), "/workspace/").concat(params.workspace, "/")

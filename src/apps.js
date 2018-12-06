@@ -41,6 +41,10 @@ inject('page:apps', ql.component({
         workspace = w
     if (!workspace)
       return inject.one('page:error')(state, { message: 'Workspace not found' }, hub)
+    const refresh = (e) => {
+      e.preventDefault()
+      hub.emit('refresh all')
+    }
     return h('div.wrapper', [
       h('h1', 'Applications'),
       h('ul.select', workspace.apps.map((app) => {
@@ -55,6 +59,8 @@ inject('page:apps', ql.component({
         ]))
       })),
       h('div.page-actions', [
+        h('a.btn.icon', { on: { click: refresh }, attrs: { href: '#' } }, '↻'),
+        //h('a.btn.icon', { attrs: { href: '#' } }, '＋'),
         h('a.btn.icon', { attrs: { href: `/host/${encodeURIComponent(params.host)}/` } }, '✕')
       ])
     ])
