@@ -30,6 +30,7 @@ const hub = Hub()
 
 // relay
 const inject = require('injectinto')
+const ql = require('odoql2')
 const exe = require('odoql2/exe')()
 exe.missing((queries) => fetch('/query', {
     method: 'POST',
@@ -64,4 +65,28 @@ page('*', (e, next) => {
 for (let pod of inject.many('pod')) pod(hub, exe)
 
 // start relay
-page.start()
+if (window.location.pathname == '/') {
+  page({ dispatch: false })
+  exe.now({
+    hosts: ql.query('hosts')
+  }).then((results) => {
+    if (Object.keys(results.hosts).length != 1) return page()
+    const host = Object.values(results.hosts)[0]
+    exe.now({
+      status: ql.query('status', {
+        host: host.host,
+        token: host.token
+      })
+    }).then((results) => {
+      if (results.status.workspaces.length != 1) {
+        page(`/host/${encodeURIComponent(host.host)}/`)
+        return
+      }
+      const workspace = results.status.workspaces[0]
+      page(`/host/${encodeURIComponent(host.host)}/workspace/${workspace.workspaceId}/`)
+    })
+  })
+  // page.start({ dispatch: false })
+}
+else page()
+

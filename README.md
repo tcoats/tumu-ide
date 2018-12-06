@@ -16,6 +16,9 @@ yarn run deploy
 ```
 
 # Todo
+- [ ] Menu on left
+- [ ] Logs on right
+- [ ] Drag and drop file
 - [ ] Convert to lambda
 
 # Dashboard
@@ -33,7 +36,6 @@ yarn run deploy
 
 # Code editor
 - [ ] Ctrl hotkeys for close and upload
-- [ ] Split screen for logs
 
 # Workspace Phase II
 - [ ] Emoji icons per lambdas

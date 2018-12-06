@@ -107,10 +107,7 @@ inject('page:editor', ql.component({
                 lineNumbers: true
               })
             vnode.data.codemirror.on('change', (instance) => {
-              if (instance.issetting) {
-                instance.issetting = false
-                return
-              }
+              if (instance.issetting) return instance.issetting = false
               hub.emit('update', { code: instance.getValue() })
             })
           },

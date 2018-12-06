@@ -2375,7 +2375,7 @@ inject('page:hosts', ql.component({
         attrs: {
           href: "/host/".concat(encodeURIComponent(host), "/")
         }
-      }, ["".concat(host, " \xB7 ").concat(state.hosts[host].emailAddress), h('div.action', {
+      }, ["".concat(host.split('://')[1], " \xB7 ").concat(state.hosts[host].emailAddress), h('div.action', {
         on: {
           click: action
         }
@@ -13410,11 +13410,7 @@ inject('page:editor', ql.component({
             lineNumbers: true
           });
           vnode.data.codemirror.on('change', function (instance) {
-            if (instance.issetting) {
-              instance.issetting = false;
-              return;
-            }
-
+            if (instance.issetting) return instance.issetting = false;
             hub.emit('update', {
               code: instance.getValue()
             });
@@ -20150,6 +20146,8 @@ var hub = Hub(); // relay
 
 var inject = require('injectinto');
 
+var ql = require('odoql2');
+
 var exe = require('odoql2/exe')();
 
 exe.missing(function (queries) {
@@ -20214,6 +20212,30 @@ try {
   }
 }
 
-page.start();
-},{"./index.styl":"index.styl","./hosts":"hosts.js","./workspaces":"workspaces.js","./apps":"apps.js","./editor":"editor.js","./login":"login.js","./error":"error.js","snabbdom":"../node_modules/snabbdom/es/snabbdom.js","snabbdom/modules/class":"../node_modules/snabbdom/modules/class.js","snabbdom/modules/props":"../node_modules/snabbdom/modules/props.js","snabbdom/modules/attributes":"../node_modules/snabbdom/modules/attributes.js","snabbdom/modules/style":"../node_modules/snabbdom/modules/style.js","snabbdom/modules/eventlisteners":"../node_modules/snabbdom/modules/eventlisteners.js","odo-hub":"../node_modules/odo-hub/index.js","injectinto":"../node_modules/injectinto/inject.js","odoql2/exe":"../node_modules/odoql2/exe.js","page":"../node_modules/page/page.js","odo-route":"../node_modules/odo-route/index.js"}]},{},["index.js"], null)
+if (window.location.pathname == '/') {
+  page({
+    dispatch: false
+  });
+  exe.now({
+    hosts: ql.query('hosts')
+  }).then(function (results) {
+    if (Object.keys(results.hosts).length != 1) return page();
+    var host = Object.values(results.hosts)[0];
+    exe.now({
+      status: ql.query('status', {
+        host: host.host,
+        token: host.token
+      })
+    }).then(function (results) {
+      if (results.status.workspaces.length != 1) {
+        page("/host/".concat(encodeURIComponent(host.host), "/"));
+        return;
+      }
+
+      var workspace = results.status.workspaces[0];
+      page("/host/".concat(encodeURIComponent(host.host), "/workspace/").concat(workspace.workspaceId, "/"));
+    });
+  }); // page.start({ dispatch: false })
+} else page();
+},{"./index.styl":"index.styl","./hosts":"hosts.js","./workspaces":"workspaces.js","./apps":"apps.js","./editor":"editor.js","./login":"login.js","./error":"error.js","snabbdom":"../node_modules/snabbdom/es/snabbdom.js","snabbdom/modules/class":"../node_modules/snabbdom/modules/class.js","snabbdom/modules/props":"../node_modules/snabbdom/modules/props.js","snabbdom/modules/attributes":"../node_modules/snabbdom/modules/attributes.js","snabbdom/modules/style":"../node_modules/snabbdom/modules/style.js","snabbdom/modules/eventlisteners":"../node_modules/snabbdom/modules/eventlisteners.js","odo-hub":"../node_modules/odo-hub/index.js","injectinto":"../node_modules/injectinto/inject.js","odoql2":"../node_modules/odoql2/index.js","odoql2/exe":"../node_modules/odoql2/exe.js","page":"../node_modules/page/page.js","odo-route":"../node_modules/odo-route/index.js"}]},{},["index.js"], null)
 //# sourceMappingURL=/src.e31bb0bc.map
