@@ -20,6 +20,7 @@ inject('pod', (hub, exe) => {
     const hosts = get('hosts', {})
     hosts[host.host] = host
     set('hosts', hosts)
+    exe.clearQuery('hosts')
   })
   hub.on('remove host', host => {
     const hosts = get('hosts', {})

@@ -15,9 +15,8 @@ yarn run debug
 yarn run deploy
 ```
 
-# Authentication
-- [x] Save token to local storage
-- [x] generate QR code for Authy
+# Todo
+- [ ] Convert to lambda
 
 # Dashboard
 - [ ] Create workspace

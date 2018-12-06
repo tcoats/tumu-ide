@@ -37,6 +37,7 @@ inject('pod', (hub, exe) => {
       },
       socketError: (err) => {
         socket.close()
+        console.error(err)
         if (err.message) alert(err.message)
         else alert('Error')
       }
@@ -61,11 +62,13 @@ inject('pod', (hub, exe) => {
       },
       login_failure: (err) => {
         socket.close()
+        console.error(err)
         if (err.message) alert(err.message)
         else alert('Error')
       },
       socketError: (err) => {
         socket.close()
+        console.error(err)
         if (err.message) alert(err.message)
         else alert('Error')
       }
@@ -109,7 +112,11 @@ inject('page:login', ql.component({
           h('label', 'Authenticator code'),
           h('input', {
             on: { keyup: updateCode },
-            attrs: { type: 'text', placeholder: 'e.g. 123456' },
+            attrs: {
+              type: 'text',
+              placeholder: 'e.g. 123456',
+              autofocus: true
+            },
             props: { value: params.code || '' }}),
           h('div.page-actions', [
             h('a.btn', { attrs: { href: '/' } }, 'Cancel'),
