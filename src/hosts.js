@@ -229,9 +229,7 @@ inject('page:hosts', ql.component({
       h('nav', [
         h('h1', 'Hosts'),
         h('ul.select', Object.keys(state.hosts).map((host) => {
-          return h('li', h('a', { attrs: { title: `Logged in as ${state.hosts[host].emailAddress}`, href: `/host/${encodeURIComponent(host)}/` }}, [
-            `${host.split('://')[1]}`
-          ]))
+          return h('li', h('a', { attrs: { title: `Logged in as ${state.hosts[host].emailAddress}`, href: `/host/${encodeURIComponent(host)}/` }}, host.split('://')[1]))
         })),
         h('div.page-actions', [
           h('a.btn.icon', { on: { click: refresh }, attrs: { href: '#' } }, '↻'),

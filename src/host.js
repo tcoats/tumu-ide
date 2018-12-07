@@ -122,6 +122,7 @@ inject('page:host', ql.component({
             : []
           ),
           h('p', `Logged in as: ${state.hosts[params.host].emailAddress}`),
+          h('h2', 'Actions'),
           h('p', h('a.btn', { on: { click: logout }, attrs: { href: '#' } }, `Logout of ${nicehost}`)),
           h('p', h('a.btn', { on: { click: createstart }, attrs: { href: '#' } }, 'Create new workspace'))
         ])
