@@ -2,6 +2,7 @@ const h = require('snabbdom/h').default
 const ql = require('odoql2')
 const inject = require('injectinto')
 const route = require('odo-route')
+const page = require('page')
 
 const connection = require('./connection')
 

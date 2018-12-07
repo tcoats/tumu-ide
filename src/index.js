@@ -5,7 +5,6 @@ require('./hosts')
 require('./host')
 require('./workspace')
 require('./editor')
-require('./login')
 require('./error')
 require('./settings')
 
