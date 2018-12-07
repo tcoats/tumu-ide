@@ -95,6 +95,24 @@ inject('pod', (hub, exe) => {
       }
     })
   })
+  hub.on('logout', (params) => new Promise((resolve, reject) => {
+    const socket = connection(params.host, params.token, {
+      open: () => socket.send('logout', {
+        emailAddress: params.emailAddress,
+        token: params.token
+      }),
+      logout_complete: () => {
+        socket.close()
+        hub.emit('remove host', params.host)
+          .then(() => exe.clearQuery('hosts'))
+          .then(resolve)
+      },
+      socketError: (err) => {
+        socket.close()
+        reject(err)
+      }
+    })
+  }))
 })
 
 route('/', (p) => {
@@ -214,7 +232,7 @@ inject('page:hosts', ql.component({
           const action = (e) => {
             e.preventDefault()
             e.stopPropagation()
-            console.log('TODO: Host actions')
+            page(`/host/${encodeURIComponent(host)}/edit/`)
           }
           return h('li', h('a', { attrs: { title: `Logged in as ${state.hosts[host].emailAddress}`, href: `/host/${encodeURIComponent(host)}/` }}, [
             `${host.split('://')[1]}`,

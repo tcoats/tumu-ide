@@ -7736,6 +7736,28 @@ inject('pod', function (hub, exe) {
       }
     });
   });
+  hub.on('logout', function (params) {
+    return new Promise(function (resolve, reject) {
+      var socket = connection(params.host, params.token, {
+        open: function open() {
+          return socket.send('logout', {
+            emailAddress: params.emailAddress,
+            token: params.token
+          });
+        },
+        logout_complete: function logout_complete() {
+          socket.close();
+          hub.emit('remove host', params.host).then(function () {
+            return exe.clearQuery('hosts');
+          }).then(resolve);
+        },
+        socketError: function socketError(err) {
+          socket.close();
+          reject(err);
+        }
+      });
+    });
+  });
 });
 route('/', function (p) {
   return {
@@ -7886,7 +7908,7 @@ inject('page:hosts', ql.component({
       var action = function action(e) {
         e.preventDefault();
         e.stopPropagation();
-        console.log('TODO: Host actions');
+        page("/host/".concat(encodeURIComponent(host), "/edit/"));
       };
 
       return h('li', h('a', {
@@ -8061,6 +8083,103 @@ inject('page:host', ql.component({
         href: '#'
       }
     }, '⇥')] : []))])]);
+  }
+}));
+route('/host/:host/edit/', function (p) {
+  return {
+    page: 'host:edit',
+    host: p.params.host
+  };
+});
+inject('page:host:edit', ql.component({
+  query: function query(state, params) {
+    return {
+      hosts: ql.query('hosts'),
+      settings: ql.query('settings')
+    };
+  },
+  render: function render(state, params, hub) {
+    var refresh = function refresh(e) {
+      e.preventDefault();
+      hub.emit('refresh all');
+    };
+
+    var hidenav = function hidenav(e) {
+      e.preventDefault();
+      hub.emit('update settings', {
+        nav: false
+      }).then(function () {
+        return hub.emit('update');
+      });
+    };
+
+    var shownav = function shownav(e) {
+      e.preventDefault();
+      hub.emit('update settings', {
+        nav: true
+      }).then(function () {
+        return hub.emit('update');
+      });
+    };
+
+    var host = state.hosts[params.host];
+
+    var logout = function logout(e) {
+      e.preventDefault();
+      hub.emit('logout', host).then(function () {
+        return page('/');
+      });
+    };
+
+    var nicehost = params.host.split('://')[1];
+    document.title = "".concat(nicehost, " \xB7 Tumu");
+    return h('div.wrapper', {
+      class: {
+        'nav-off': !state.settings.nav
+      }
+    }, [h('nav', [h('h1', 'Hosts'), h('ul.select', Object.keys(state.hosts).map(function (host) {
+      var action = function action(e) {
+        e.preventDefault();
+        e.stopPropagation();
+        page("/host/".concat(encodeURIComponent(host), "/edit/"));
+      };
+
+      return h('li', h('a', {
+        attrs: {
+          title: "Logged in as ".concat(state.hosts[host].emailAddress),
+          href: "/host/".concat(encodeURIComponent(host), "/")
+        }
+      }, ["".concat(host.split('://')[1]), h('div.action', {
+        on: {
+          click: action
+        }
+      }, '…')]));
+    })), h('div.page-actions', [h('a.btn.icon', {
+      on: {
+        click: refresh
+      },
+      attrs: {
+        href: '#'
+      }
+    }, '↻'), h('a.btn.icon', {
+      on: {
+        click: hidenav
+      },
+      attrs: {
+        href: '#'
+      }
+    }, '⇤')])]), h('article', [h('header', _toConsumableArray(!state.settings.nav ? [h('a.btn.icon', {
+      on: {
+        click: shownav
+      },
+      attrs: {
+        href: '#'
+      }
+    }, '⇥')] : []).concat([h('h1', nicehost)])), h('p', "Logged in as: ".concat(state.hosts[params.host].emailAddress)), h('div.page-actions', [h('button.btn', {
+      on: {
+        click: logout
+      }
+    }, 'Logout')])])]);
   }
 }));
 },{"snabbdom/h":"../node_modules/snabbdom/h.js","odoql2":"../node_modules/odoql2/index.js","injectinto":"../node_modules/injectinto/inject.js","odo-route":"../node_modules/odo-route/index.js","page":"../node_modules/page/page.js","./connection":"connection.js"}],"workspace.js":[function(require,module,exports) {
@@ -18943,13 +19062,13 @@ inject('page:editor', ql.component({
         host: params.host,
         token: hosts[params.host].token
       }),
+      hosts: ql.query('hosts'),
       settings: ql.query('settings')
     };
   },
   render: function render(state, params, hub) {
     var code = params.code || state.code;
-    var hosts = get('hosts', {});
-    if (!hosts[params.host]) return inject.one('page:error')(state, {
+    if (!state.hosts[params.host]) return inject.one('page:error')(state, {
       message: 'Host not found'
     }, hub);
     if (code == null || code == undefined) return inject.one('page:error')(state, {
@@ -19012,7 +19131,7 @@ inject('page:editor', ql.component({
       message: 'App not found'
     }, hub);
     document.title = "".concat(app.name, " \xB7 Tumu");
-    var host = hosts[params.host];
+    var host = state.hosts[params.host];
 
     var upload = function upload(e) {
       e.preventDefault();

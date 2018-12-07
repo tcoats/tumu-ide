@@ -802,8 +802,8 @@ article.editor header {
     top: 2000px;
   }
 }
-.error-message {
-  margin: 0 15px;
+p {
+  margin: 10px 15px;
 }
 h1 {
   font-weight: normal;

@@ -15,10 +15,6 @@ yarn run debug
 yarn run deploy
 ```
 
-# Todo
-- [ ] Menu on left
-- [ ] Logs on right
-
 # CRUD
 - [ ] Create workspace
 - [ ] Delete workspace

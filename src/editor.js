@@ -71,13 +71,13 @@ inject('page:editor', ql.component({
         host: params.host,
         token: hosts[params.host].token
       }),
+      hosts: ql.query('hosts'),
       settings: ql.query('settings')
     }
   },
   render: (state, params, hub) => {
     const code = params.code || state.code
-    const hosts = get('hosts', {})
-    if (!hosts[params.host])
+    if (!state.hosts[params.host])
       return inject.one('page:error')(state, { message: 'Host not found' }, hub)
     if (code == null || code == undefined)
       return inject.one('page:error')(state, { message: 'App not found' }, hub)
@@ -94,7 +94,7 @@ inject('page:editor', ql.component({
     if (!app)
       return inject.one('page:error')(state, { message: 'App not found' }, hub)
     document.title = `${app.name} · Tumu`
-    const host = hosts[params.host]
+    const host = state.hosts[params.host]
     const upload = (e) => {
       e.preventDefault()
       hub.emit('app publish', {
