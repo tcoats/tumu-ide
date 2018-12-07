@@ -59,6 +59,24 @@ inject('pod', (hub, exe) => {
       }
     })
   }))
+  hub.on('workspace rename', (params) => new Promise((resolve, reject) => {
+    const socket = connection(params.host, params.token, {
+      open: () => socket.send('workspace_rename', {
+        workspace: params.workspace,
+        name: params.name
+      }),
+      workspace_renamed: () => {
+        socket.close()
+        resolve()
+        exe.clearQuery('status')
+        page(`/host/${encodeURIComponent(params.host)}/workspace/${encodeURIComponent(params.workspace)}/settings/`)
+      },
+      socketError: (err) => {
+        socket.close()
+        reject(err)
+      }
+    })
+  }))
 })
 
 route('/host/:host/workspace/:workspace/settings/', (p) => {
@@ -95,6 +113,19 @@ inject('page:workspace', ql.component({
     document.title = `${workspace.name} · Tumu`
     let article = null
     if (params.isrenameworkspace) {
+      const updateName = (e) => {
+        hub.emit('update', { name: e.target.value })
+      }
+      const rename = (e) => {
+        e.preventDefault()
+        if (!params.name || params.name == workspace.name) return
+        hub.emit('workspace rename', {
+          host: params.host,
+          token: host.token,
+          workspace: params.workspace,
+          name: params.name
+        })
+      }
       article = h('article', [
         h('header', [
           ...(!state.settings.nav
@@ -102,6 +133,19 @@ inject('page:workspace', ql.component({
             : []
           ),
           h('h1', `Rename ${workspace.name}`)
+        ]),
+        h('form', { on: { submit: rename } }, [
+          h('label', 'Type workspace name to delete'),
+          h('input', {
+            on: { keyup: updateName },
+            attrs: {
+              type: 'text',
+              autofocus: true
+            },
+            props: { value: params.name || workspace.name }}),
+          h('div.page-actions', [
+            h('button.btn', { on: { click: rename } }, 'Rename')
+          ])
         ])
       ])
     }

@@ -8235,6 +8235,28 @@ inject('pod', function (hub, exe) {
       });
     });
   });
+  hub.on('workspace rename', function (params) {
+    return new Promise(function (resolve, reject) {
+      var socket = connection(params.host, params.token, {
+        open: function open() {
+          return socket.send('workspace_rename', {
+            workspace: params.workspace,
+            name: params.name
+          });
+        },
+        workspace_renamed: function workspace_renamed() {
+          socket.close();
+          resolve();
+          exe.clearQuery('status');
+          page("/host/".concat(encodeURIComponent(params.host), "/workspace/").concat(encodeURIComponent(params.workspace), "/settings/"));
+        },
+        socketError: function socketError(err) {
+          socket.close();
+          reject(err);
+        }
+      });
+    });
+  });
 });
 route('/host/:host/workspace/:workspace/settings/', function (p) {
   return {
@@ -8298,6 +8320,23 @@ inject('page:workspace', ql.component({
     var article = null;
 
     if (params.isrenameworkspace) {
+      var updateName = function updateName(e) {
+        hub.emit('update', {
+          name: e.target.value
+        });
+      };
+
+      var rename = function rename(e) {
+        e.preventDefault();
+        if (!params.name || params.name == workspace.name) return;
+        hub.emit('workspace rename', {
+          host: params.host,
+          token: host.token,
+          workspace: params.workspace,
+          name: params.name
+        });
+      };
+
       article = h('article', [h('header', _toConsumableArray(!state.settings.nav ? [h('a.btn.icon', {
         on: {
           click: shownav
@@ -8305,9 +8344,28 @@ inject('page:workspace', ql.component({
         attrs: {
           href: '#'
         }
-      }, '⇥')] : []).concat([h('h1', "Rename ".concat(workspace.name))]))]);
+      }, '⇥')] : []).concat([h('h1', "Rename ".concat(workspace.name))])), h('form', {
+        on: {
+          submit: rename
+        }
+      }, [h('label', 'Type workspace name to delete'), h('input', {
+        on: {
+          keyup: updateName
+        },
+        attrs: {
+          type: 'text',
+          autofocus: true
+        },
+        props: {
+          value: params.name || workspace.name
+        }
+      }), h('div.page-actions', [h('button.btn', {
+        on: {
+          click: rename
+        }
+      }, 'Rename')])])]);
     } else if (params.isdeleteworkspace) {
-      var updateName = function updateName(e) {
+      var _updateName = function _updateName(e) {
         hub.emit('update', {
           name: e.target.value
         });
@@ -8336,7 +8394,7 @@ inject('page:workspace', ql.component({
         }
       }, [h('label', 'Type workspace name to delete'), h('input', {
         on: {
-          keyup: updateName
+          keyup: _updateName
         },
         attrs: {
           type: 'text',
