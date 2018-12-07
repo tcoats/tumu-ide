@@ -16,6 +16,7 @@ yarn run deploy
 ```
 
 # CRUD
+- [x] Logout
 - [ ] Create workspace
 - [ ] Delete workspace
 - [ ] Invite to workspace

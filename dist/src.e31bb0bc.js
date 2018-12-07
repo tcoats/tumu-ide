@@ -8085,6 +8085,25 @@ inject('page:host', ql.component({
     }, '⇥')] : []))])]);
   }
 }));
+},{"snabbdom/h":"../node_modules/snabbdom/h.js","odoql2":"../node_modules/odoql2/index.js","injectinto":"../node_modules/injectinto/inject.js","odo-route":"../node_modules/odo-route/index.js","page":"../node_modules/page/page.js","./connection":"connection.js"}],"hostedit.js":[function(require,module,exports) {
+function _toConsumableArray(arr) { return _arrayWithoutHoles(arr) || _iterableToArray(arr) || _nonIterableSpread(); }
+
+function _nonIterableSpread() { throw new TypeError("Invalid attempt to spread non-iterable instance"); }
+
+function _iterableToArray(iter) { if (Symbol.iterator in Object(iter) || Object.prototype.toString.call(iter) === "[object Arguments]") return Array.from(iter); }
+
+function _arrayWithoutHoles(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = new Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } }
+
+var h = require('snabbdom/h').default;
+
+var ql = require('odoql2');
+
+var inject = require('injectinto');
+
+var route = require('odo-route');
+
+var page = require('page');
+
 route('/host/:host/edit/', function (p) {
   return {
     page: 'host:edit',
@@ -8182,7 +8201,7 @@ inject('page:host:edit', ql.component({
     }, 'Logout')])])]);
   }
 }));
-},{"snabbdom/h":"../node_modules/snabbdom/h.js","odoql2":"../node_modules/odoql2/index.js","injectinto":"../node_modules/injectinto/inject.js","odo-route":"../node_modules/odo-route/index.js","page":"../node_modules/page/page.js","./connection":"connection.js"}],"workspace.js":[function(require,module,exports) {
+},{"snabbdom/h":"../node_modules/snabbdom/h.js","odoql2":"../node_modules/odoql2/index.js","injectinto":"../node_modules/injectinto/inject.js","odo-route":"../node_modules/odo-route/index.js","page":"../node_modules/page/page.js"}],"workspace.js":[function(require,module,exports) {
 function _toConsumableArray(arr) { return _arrayWithoutHoles(arr) || _iterableToArray(arr) || _nonIterableSpread(); }
 
 function _nonIterableSpread() { throw new TypeError("Invalid attempt to spread non-iterable instance"); }
@@ -20530,6 +20549,8 @@ require('./hosts');
 
 require('./host');
 
+require('./hostedit');
+
 require('./workspace');
 
 require('./editor');
@@ -20652,5 +20673,5 @@ if (window.location.pathname == '/') {
     });
   }); // page.start({ dispatch: false })
 } else page();
-},{"./index.styl":"index.styl","./hosts":"hosts.js","./host":"host.js","./workspace":"workspace.js","./editor":"editor.js","./error":"error.js","./settings":"settings.js","snabbdom":"../node_modules/snabbdom/es/snabbdom.js","snabbdom/modules/class":"../node_modules/snabbdom/modules/class.js","snabbdom/modules/props":"../node_modules/snabbdom/modules/props.js","snabbdom/modules/attributes":"../node_modules/snabbdom/modules/attributes.js","snabbdom/modules/style":"../node_modules/snabbdom/modules/style.js","snabbdom/modules/eventlisteners":"../node_modules/snabbdom/modules/eventlisteners.js","odo-hub":"../node_modules/odo-hub/index.js","injectinto":"../node_modules/injectinto/inject.js","odoql2":"../node_modules/odoql2/index.js","odoql2/exe":"../node_modules/odoql2/exe.js","page":"../node_modules/page/page.js","odo-route":"../node_modules/odo-route/index.js"}]},{},["index.js"], null)
+},{"./index.styl":"index.styl","./hosts":"hosts.js","./host":"host.js","./hostedit":"hostedit.js","./workspace":"workspace.js","./editor":"editor.js","./error":"error.js","./settings":"settings.js","snabbdom":"../node_modules/snabbdom/es/snabbdom.js","snabbdom/modules/class":"../node_modules/snabbdom/modules/class.js","snabbdom/modules/props":"../node_modules/snabbdom/modules/props.js","snabbdom/modules/attributes":"../node_modules/snabbdom/modules/attributes.js","snabbdom/modules/style":"../node_modules/snabbdom/modules/style.js","snabbdom/modules/eventlisteners":"../node_modules/snabbdom/modules/eventlisteners.js","odo-hub":"../node_modules/odo-hub/index.js","injectinto":"../node_modules/injectinto/inject.js","odoql2":"../node_modules/odoql2/index.js","odoql2/exe":"../node_modules/odoql2/exe.js","page":"../node_modules/page/page.js","odo-route":"../node_modules/odo-route/index.js"}]},{},["index.js"], null)
 //# sourceMappingURL=/src.e31bb0bc.map
