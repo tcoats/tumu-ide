@@ -33,6 +33,7 @@ body
   color $primary
   font-family Helvetica, sans-serif
   font-size 18px
+  overflow hidden
 
 ref(name)
   unquote("[") + name + unquote("]")
@@ -45,14 +46,10 @@ ref(name)
   overflow hidden
   &.nav-off
     grid-template-columns ref(article) 1fr
-    nav
-      display none
     &.info-on
       grid-template-columns ref(article) 1fr ref(info) 320px
   &.info-on
     grid-template-columns ref(nav) 320px ref(article) 1fr ref(info) 320px
-    .info
-      display block
 
 nav
   grid-row 1 / 1
@@ -64,10 +61,60 @@ article
   grid-row 1 / 1
   grid-column article
   position relative
-  overflow scroll
+  overflow hidden
+  &.editor header
+    position absolute
+    top 0
+    left 0
+    z-index 2
+
+@media (max-width: 960px)
+  .wrapper
+    grid-template-columns ref(nav) 320px ref(article) 1fr
+    &.info-on
+      grid-template-columns ref(nav) 320px ref(article) 1fr
+      &.nav-off
+        grid-template-columns ref(article) 1fr
+
+@media (max-width: 640px)
+  .wrapper
+    grid-template-columns ref(nav) 1fr
+    &.info-on
+      grid-template-columns ref(nav) 1fr
+      &.nav-off
+        grid-template-columns ref(article) 1fr
+    &.nav-off
+      grid-template-columns ref(article) 1fr
+
 
 .info
   display none
+  background-color $bg2
+
+.wrapper
+  &.nav-off nav
+    display none
+  &.info-on .info
+    display block
+
+@media (max-width: 960px)
+  .wrapper
+    &.info-on
+      .info
+        display none
+
+@media (max-width: 640px)
+  .wrapper
+    &.nav-off
+      article
+        position relative
+        top auto
+  article
+    position absolute
+    top 2000px
+
+.error-message
+  margin 0 15px
 
 h1
   font-weight normal
@@ -142,8 +189,10 @@ form
       display block
       color $primary
       text-decoration none
+      &.selected
+          background-color $bg3
       &:hover
-        background-color $bg3
+        background-color $bg1
     div.action
       padding 10px 15px
       position absolute

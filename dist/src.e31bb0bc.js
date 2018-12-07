@@ -7745,10 +7745,34 @@ route('/', function (p) {
 inject('page:hosts', ql.component({
   query: function query(state, params) {
     return {
-      hosts: ql.query('hosts')
+      hosts: ql.query('hosts'),
+      settings: ql.query('settings')
     };
   },
   render: function render(state, params, hub) {
+    var refresh = function refresh(e) {
+      e.preventDefault();
+      hub.emit('refresh all');
+    };
+
+    var hidenav = function hidenav(e) {
+      e.preventDefault();
+      hub.emit('update settings', {
+        nav: false
+      }).then(function () {
+        return hub.emit('update');
+      });
+    };
+
+    var shownav = function shownav(e) {
+      e.preventDefault();
+      hub.emit('update settings', {
+        nav: true
+      }).then(function () {
+        return hub.emit('update');
+      });
+    };
+
     var login = null;
     if (!params.host) params.host = 'localhost:8081';
 
@@ -7820,7 +7844,14 @@ inject('page:hosts', ql.component({
         });
       };
 
-      login = [h('header', [h('h1', 'Connect')]), h('form', {
+      login = [h('header', _toConsumableArray(!state.settings.nav ? [h('a.btn.icon', {
+        on: {
+          click: shownav
+        },
+        attrs: {
+          href: '#'
+        }
+      }, '⇥')] : []).concat([h('h1', 'Connect')])), h('form', {
         on: {
           submit: submitlogin
         }
@@ -7846,13 +7877,12 @@ inject('page:hosts', ql.component({
       }), h('div.page-actions', [h('button.btn', 'Login')])])];
     }
 
-    var refresh = function refresh(e) {
-      e.preventDefault();
-      hub.emit('refresh all');
-    };
-
     document.title = "Hosts \xB7 Tumu";
-    return h('div.wrapper', [h('nav', [h('h1', 'Hosts'), h('ul.select', Object.keys(state.hosts).map(function (host) {
+    return h('div.wrapper', {
+      class: {
+        'nav-off': !state.settings.nav
+      }
+    }, [h('nav', [h('h1', 'Hosts'), h('ul.select', Object.keys(state.hosts).map(function (host) {
       var action = function action(e) {
         e.preventDefault();
         e.stopPropagation();
@@ -7876,10 +7906,25 @@ inject('page:hosts', ql.component({
       attrs: {
         href: '#'
       }
-    }, '↻')])]), h('article', login)]);
+    }, '↻'), h('a.btn.icon', {
+      on: {
+        click: hidenav
+      },
+      attrs: {
+        href: '#'
+      }
+    }, '⇤')])]), h('article', login)]);
   }
 }));
 },{"snabbdom/h":"../node_modules/snabbdom/h.js","odoql2":"../node_modules/odoql2/index.js","injectinto":"../node_modules/injectinto/inject.js","odo-route":"../node_modules/odo-route/index.js","qrcode":"../node_modules/qrcode/lib/browser.js","page":"../node_modules/page/page.js","./connection":"connection.js","./fixhosturl":"fixhosturl.js"}],"host.js":[function(require,module,exports) {
+function _toConsumableArray(arr) { return _arrayWithoutHoles(arr) || _iterableToArray(arr) || _nonIterableSpread(); }
+
+function _nonIterableSpread() { throw new TypeError("Invalid attempt to spread non-iterable instance"); }
+
+function _iterableToArray(iter) { if (Symbol.iterator in Object(iter) || Object.prototype.toString.call(iter) === "[object Arguments]") return Array.from(iter); }
+
+function _arrayWithoutHoles(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = new Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } }
+
 var h = require('snabbdom/h').default;
 
 var ql = require('odoql2');
@@ -7934,7 +7979,8 @@ inject('page:host', ql.component({
       status: ql.query('status', {
         host: params.host,
         token: hosts[params.host].token
-      })
+      }),
+      settings: ql.query('settings')
     };
   },
   render: function render(state, params, hub) {
@@ -7949,7 +7995,29 @@ inject('page:host', ql.component({
       hub.emit('refresh all');
     };
 
-    return h('div.wrapper', [h('nav', [h('header', [h('a.btn.icon', {
+    var hidenav = function hidenav(e) {
+      e.preventDefault();
+      hub.emit('update settings', {
+        nav: false
+      }).then(function () {
+        return hub.emit('update');
+      });
+    };
+
+    var shownav = function shownav(e) {
+      e.preventDefault();
+      hub.emit('update settings', {
+        nav: true
+      }).then(function () {
+        return hub.emit('update');
+      });
+    };
+
+    return h('div.wrapper', {
+      class: {
+        'nav-off': !state.settings.nav
+      }
+    }, [h('nav', [h('header', [h('a.btn.icon', {
       attrs: {
         href: "/"
       }
@@ -7977,10 +8045,33 @@ inject('page:host', ql.component({
       attrs: {
         href: '#'
       }
-    }, '↻')])])]);
+    }, '↻'), //h('a.btn.icon', { attrs: { href: '#' } }, '＋'),
+    h('a.btn.icon', {
+      on: {
+        click: hidenav
+      },
+      attrs: {
+        href: '#'
+      }
+    }, '⇤')])]), h('article', [h('header', _toConsumableArray(!state.settings.nav ? [h('a.btn.icon', {
+      on: {
+        click: shownav
+      },
+      attrs: {
+        href: '#'
+      }
+    }, '⇥')] : []))])]);
   }
 }));
 },{"snabbdom/h":"../node_modules/snabbdom/h.js","odoql2":"../node_modules/odoql2/index.js","injectinto":"../node_modules/injectinto/inject.js","odo-route":"../node_modules/odo-route/index.js","page":"../node_modules/page/page.js","./connection":"connection.js"}],"workspace.js":[function(require,module,exports) {
+function _toConsumableArray(arr) { return _arrayWithoutHoles(arr) || _iterableToArray(arr) || _nonIterableSpread(); }
+
+function _nonIterableSpread() { throw new TypeError("Invalid attempt to spread non-iterable instance"); }
+
+function _iterableToArray(iter) { if (Symbol.iterator in Object(iter) || Object.prototype.toString.call(iter) === "[object Arguments]") return Array.from(iter); }
+
+function _arrayWithoutHoles(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = new Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } }
+
 var h = require('snabbdom/h').default;
 
 var ql = require('odoql2');
@@ -8016,7 +8107,8 @@ inject('page:workspace', ql.component({
       status: ql.query('status', {
         host: params.host,
         token: hosts[params.host].token
-      })
+      }),
+      settings: ql.query('settings')
     };
   },
   render: function render(state, params, hub) {
@@ -8058,7 +8150,29 @@ inject('page:workspace', ql.component({
       hub.emit('refresh all');
     };
 
-    return h('div.wrapper', [h('nav', [h('header', [h('a.btn.icon', {
+    var hidenav = function hidenav(e) {
+      e.preventDefault();
+      hub.emit('update settings', {
+        nav: false
+      }).then(function () {
+        return hub.emit('update');
+      });
+    };
+
+    var shownav = function shownav(e) {
+      e.preventDefault();
+      hub.emit('update settings', {
+        nav: true
+      }).then(function () {
+        return hub.emit('update');
+      });
+    };
+
+    return h('div.wrapper', {
+      class: {
+        'nav-off': !state.settings.nav
+      }
+    }, [h('nav', [h('header', [h('a.btn.icon', {
       attrs: {
         href: "/host/".concat(encodeURIComponent(params.host), "/")
       }
@@ -8086,7 +8200,22 @@ inject('page:workspace', ql.component({
       attrs: {
         href: '#'
       }
-    }, '↻')])])]);
+    }, '↻'), //h('a.btn.icon', { attrs: { href: '#' } }, '＋'),
+    h('a.btn.icon', {
+      on: {
+        click: hidenav
+      },
+      attrs: {
+        href: '#'
+      }
+    }, '⇤')])]), h('article', [h('header', _toConsumableArray(!state.settings.nav ? [h('a.btn.icon', {
+      on: {
+        click: shownav
+      },
+      attrs: {
+        href: '#'
+      }
+    }, '⇥')] : []))])]);
   }
 }));
 },{"snabbdom/h":"../node_modules/snabbdom/h.js","odoql2":"../node_modules/odoql2/index.js","injectinto":"../node_modules/injectinto/inject.js","odo-route":"../node_modules/odo-route/index.js","./connection":"connection.js"}],"../node_modules/codemirror/lib/codemirror.js":[function(require,module,exports) {
@@ -18722,6 +18851,14 @@ CodeMirror.defineMIME("application/typescript", { name: "javascript", typescript
 });
 
 },{"../../lib/codemirror":"../node_modules/codemirror/lib/codemirror.js"}],"editor.js":[function(require,module,exports) {
+function _toConsumableArray(arr) { return _arrayWithoutHoles(arr) || _iterableToArray(arr) || _nonIterableSpread(); }
+
+function _nonIterableSpread() { throw new TypeError("Invalid attempt to spread non-iterable instance"); }
+
+function _iterableToArray(iter) { if (Symbol.iterator in Object(iter) || Object.prototype.toString.call(iter) === "[object Arguments]") return Array.from(iter); }
+
+function _arrayWithoutHoles(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = new Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } }
+
 var h = require('snabbdom/h').default;
 
 var ql = require('odoql2');
@@ -18805,7 +18942,8 @@ inject('page:editor', ql.component({
       status: ql.query('status', {
         host: params.host,
         token: hosts[params.host].token
-      })
+      }),
+      settings: ql.query('settings')
     };
   },
   render: function render(state, params, hub) {
@@ -18893,7 +19031,94 @@ inject('page:editor', ql.component({
       });
     };
 
-    return h('div.wrapper.nav-off', [h('nav', ['Hello']), h('article', [h('div', {
+    var hidenav = function hidenav(e) {
+      e.preventDefault();
+      hub.emit('update settings', {
+        nav: false
+      }).then(function () {
+        return hub.emit('update');
+      });
+    };
+
+    var shownav = function shownav(e) {
+      e.preventDefault();
+      hub.emit('update settings', {
+        nav: true
+      }).then(function () {
+        return hub.emit('update');
+      });
+    };
+
+    var hideinfo = function hideinfo(e) {
+      e.preventDefault();
+      hub.emit('update settings', {
+        info: false
+      }).then(function () {
+        return hub.emit('update');
+      });
+    };
+
+    var showinfo = function showinfo(e) {
+      e.preventDefault();
+      hub.emit('update settings', {
+        info: true
+      }).then(function () {
+        return hub.emit('update');
+      });
+    };
+
+    return h('div.wrapper', {
+      class: {
+        'nav-off': !state.settings.nav,
+        'info-on': state.settings.info
+      }
+    }, [h('nav', [h('header', [h('a.btn.icon', {
+      attrs: {
+        href: "/host/".concat(encodeURIComponent(params.host), "/")
+      }
+    }, '←'), h('h1', 'Applications')]), h('ul.select', workspace.apps.map(function (a) {
+      var action = function action(e) {
+        e.preventDefault();
+        e.stopPropagation();
+        console.log('TODO: App actions');
+      };
+
+      return h('li', h('a', {
+        class: {
+          selected: a.appId == app.appId
+        },
+        attrs: {
+          title: "ID: ".concat(a.appId),
+          href: "/host/".concat(encodeURIComponent(params.host), "/workspace/").concat(workspace.workspaceId, "/app/").concat(a.appId, "/")
+        }
+      }, ["".concat(a.name), h('div.action', {
+        on: {
+          click: action
+        }
+      }, '…')]));
+    })), h('div.page-actions', [h('a.btn.icon', {
+      on: {
+        click: refresh
+      },
+      attrs: {
+        href: '#'
+      }
+    }, '↻'), //h('a.btn.icon', { attrs: { href: '#' } }, '＋'),
+    h('a.btn.icon', {
+      on: {
+        click: hidenav
+      },
+      attrs: {
+        href: '#'
+      }
+    }, '⇤')])]), h('article.editor', [h('header', _toConsumableArray(!state.settings.nav ? [h('a.btn.icon', {
+      on: {
+        click: shownav
+      },
+      attrs: {
+        href: '#'
+      }
+    }, '⇥')] : [])), h('div', {
       hook: {
         insert: function insert(vnode) {
           vnode.data.codemirror = codemirror(function (el) {
@@ -18926,7 +19151,7 @@ inject('page:editor', ql.component({
           }
         }
       }
-    })]), h('div.page-actions', [h('a.btn.icon', {
+    }), h('div.page-actions', [h('a.btn.icon', {
       on: {
         click: upload
       },
@@ -18934,19 +19159,23 @@ inject('page:editor', ql.component({
         title: 'Upload',
         href: '#'
       }
-    }, '↑'), h('a.btn.icon', {
+    }, '↑')].concat(_toConsumableArray(!state.settings.info ? [h('a.btn.icon', {
       on: {
-        click: refresh
+        click: showinfo
       },
       attrs: {
+        title: 'Hide',
         href: '#'
       }
-    }, '↻'), h('a.btn.icon', {
+    }, '⇤')] : [])))]), h('div.info', [h('header', _toConsumableArray(state.settings.info ? [h('a.btn.icon', {
+      on: {
+        click: hideinfo
+      },
       attrs: {
-        title: 'Close',
-        href: "/host/".concat(encodeURIComponent(params.host), "/workspace/").concat(params.workspace, "/")
+        title: 'Show',
+        href: '#'
       }
-    }, '✕')])]);
+    }, '⇥')] : []).concat([h('h1', 'Logs')]))])]);
   }
 }));
 },{"snabbdom/h":"../node_modules/snabbdom/h.js","odoql2":"../node_modules/odoql2/index.js","injectinto":"../node_modules/injectinto/inject.js","odo-route":"../node_modules/odo-route/index.js","codemirror":"../node_modules/codemirror/lib/codemirror.js","codemirror/mode/javascript/javascript":"../node_modules/codemirror/mode/javascript/javascript.js","./connection":"connection.js"}],"error.js":[function(require,module,exports) {
@@ -18960,7 +19189,7 @@ var route = require('odo-route');
 
 inject('page:error', ql.component({
   render: function render(state, params, hub) {
-    return h('div.wrapper', [h('h1', 'Error'), h('p', params.message)]);
+    return h('div.wrapper.nav-off', h('article', [h('h1', 'Error'), h('p.error-message', params.message)]));
   }
 }));
 },{"snabbdom/h":"../node_modules/snabbdom/h.js","odoql2":"../node_modules/odoql2/index.js","injectinto":"../node_modules/injectinto/inject.js","odo-route":"../node_modules/odo-route/index.js"}],"settings.js":[function(require,module,exports) {

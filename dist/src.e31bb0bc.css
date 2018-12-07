@@ -716,6 +716,7 @@ body {
   color: #dfe1e8;
   font-family: Helvetica, sans-serif;
   font-size: 18px;
+  overflow: hidden;
 }
 .wrapper {
   display: grid;
@@ -727,17 +728,11 @@ body {
 .wrapper.nav-off {
   grid-template-columns: [article] 1fr;
 }
-.wrapper.nav-off nav {
-  display: none;
-}
 .wrapper.nav-off.info-on {
   grid-template-columns: [article] 1fr [info] 320px;
 }
 .wrapper.info-on {
   grid-template-columns: [nav] 320px [article] 1fr [info] 320px;
-}
-.wrapper.info-on .info {
-  display: block;
 }
 nav {
   grid-row: 1/1;
@@ -749,10 +744,66 @@ article {
   grid-row: 1/1;
   grid-column: article;
   position: relative;
-  overflow: scroll;
+  overflow: hidden;
+}
+article.editor header {
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 2;
+}
+@media (max-width: 960px) {
+  .wrapper {
+    grid-template-columns: [nav] 320px [article] 1fr;
+  }
+  .wrapper.info-on {
+    grid-template-columns: [nav] 320px [article] 1fr;
+  }
+  .wrapper.info-on.nav-off {
+    grid-template-columns: [article] 1fr;
+  }
+}
+@media (max-width: 640px) {
+  .wrapper {
+    grid-template-columns: [nav] 1fr;
+  }
+  .wrapper.info-on {
+    grid-template-columns: [nav] 1fr;
+  }
+  .wrapper.info-on.nav-off {
+    grid-template-columns: [article] 1fr;
+  }
+  .wrapper.nav-off {
+    grid-template-columns: [article] 1fr;
+  }
 }
 .info {
   display: none;
+  background-color: #1a2b34;
+}
+.wrapper.nav-off nav {
+  display: none;
+}
+.wrapper.info-on .info {
+  display: block;
+}
+@media (max-width: 960px) {
+  .wrapper.info-on .info {
+    display: none;
+  }
+}
+@media (max-width: 640px) {
+  .wrapper.nav-off article {
+    position: relative;
+    top: auto;
+  }
+  article {
+    position: absolute;
+    top: 2000px;
+  }
+}
+.error-message {
+  margin: 0 15px;
 }
 h1 {
   font-weight: normal;
@@ -831,8 +882,11 @@ form {
   color: #dfe1e8;
   text-decoration: none;
 }
-.select li a:hover {
+.select li a.selected {
   background-color: #465b66;
+}
+.select li a:hover {
+  background-color: #16232a;
 }
 .select li div.action {
   padding: 10px 15px;

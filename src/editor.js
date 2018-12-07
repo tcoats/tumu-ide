@@ -70,7 +70,8 @@ inject('page:editor', ql.component({
       status: ql.query('status', {
         host: params.host,
         token: hosts[params.host].token
-      })
+      }),
+      settings: ql.query('settings')
     }
   },
   render: (state, params, hub) => {
@@ -107,9 +108,59 @@ inject('page:editor', ql.component({
       e.preventDefault()
       hub.emit('refresh all', { code: null })
     }
-    return h('div.wrapper.nav-off', [
-      h('nav', ['Hello']),
-      h('article', [
+    const hidenav = (e) => {
+      e.preventDefault()
+      hub.emit('update settings', { nav: false })
+        .then(() => hub.emit('update'))
+    }
+    const shownav = (e) => {
+      e.preventDefault()
+      hub.emit('update settings', { nav: true })
+        .then(() => hub.emit('update'))
+    }
+    const hideinfo = (e) => {
+      e.preventDefault()
+      hub.emit('update settings', { info: false })
+        .then(() => hub.emit('update'))
+    }
+    const showinfo = (e) => {
+      e.preventDefault()
+      hub.emit('update settings', { info: true })
+        .then(() => hub.emit('update'))
+    }
+    return h('div.wrapper', { class: {
+        'nav-off': !state.settings.nav,
+        'info-on': state.settings.info
+      } }, [
+      h('nav', [
+        h('header', [
+          h('a.btn.icon', { attrs: { href: `/host/${encodeURIComponent(params.host)}/` } }, '←'),
+          h('h1', 'Applications')
+        ]),
+        h('ul.select', workspace.apps.map((a) => {
+          const action = (e) => {
+            e.preventDefault()
+            e.stopPropagation()
+            console.log('TODO: App actions')
+          }
+          return h('li', h('a', { class: { selected: a.appId == app.appId }, attrs: { title: `ID: ${a.appId}`, href: `/host/${encodeURIComponent(params.host)}/workspace/${workspace.workspaceId}/app/${a.appId}/` } }, [
+            `${a.name}`,
+            h('div.action', { on: { click: action } }, '…')
+          ]))
+        })),
+        h('div.page-actions', [
+          h('a.btn.icon', { on: { click: refresh }, attrs: { href: '#' } }, '↻'),
+          //h('a.btn.icon', { attrs: { href: '#' } }, '＋'),
+          h('a.btn.icon', { on: { click: hidenav }, attrs: { href: '#' } }, '⇤')
+        ])
+      ]),
+      h('article.editor', [
+        h('header', [
+          ...(!state.settings.nav
+            ? [h('a.btn.icon', { on: { click: shownav }, attrs: { href: '#' } }, '⇥')]
+            : []
+          )
+        ]),
         h('div', {
           hook: {
             insert: (vnode) => {
@@ -142,12 +193,21 @@ inject('page:editor', ql.component({
               }
             }
           }
-        })
+        }),
+        h('div.page-actions', [
+          h('a.btn.icon', { on: { click: upload }, attrs: { title: 'Upload', href: '#' } }, '↑'),
+          ...(!state.settings.info
+            ? [h('a.btn.icon', { on: { click: showinfo }, attrs: { title: 'Hide', href: '#' } }, '⇤')]
+            : [])
+        ])
       ]),
-      h('div.page-actions', [
-        h('a.btn.icon', { on: { click: upload }, attrs: { title: 'Upload', href: '#' } }, '↑'),
-        h('a.btn.icon', { on: { click: refresh }, attrs: { href: '#' } }, '↻'),
-        h('a.btn.icon', { attrs: { title: 'Close', href: `/host/${encodeURIComponent(params.host)}/workspace/${params.workspace}/` } }, '✕')
+      h('div.info', [
+        h('header', [
+          ...(state.settings.info
+            ? [h('a.btn.icon', { on: { click: hideinfo }, attrs: { title: 'Show', href: '#' } }, '⇥')]
+            : []),
+          h('h1', 'Logs')
+        ])
       ])
     ])
   }

@@ -104,10 +104,25 @@ route('/', (p) => {
 inject('page:hosts', ql.component({
   query: (state, params) => {
     return {
-      hosts: ql.query('hosts')
+      hosts: ql.query('hosts'),
+      settings: ql.query('settings')
     }
   },
   render: (state, params, hub) => {
+    const refresh = (e) => {
+      e.preventDefault()
+      hub.emit('refresh all')
+    }
+    const hidenav = (e) => {
+      e.preventDefault()
+      hub.emit('update settings', { nav: false })
+        .then(() => hub.emit('update'))
+    }
+    const shownav = (e) => {
+      e.preventDefault()
+      hub.emit('update settings', { nav: true })
+        .then(() => hub.emit('update'))
+    }
     let login = null
     if (!params.host) params.host = 'localhost:8081'
     if (params.challenge) {
@@ -163,6 +178,10 @@ inject('page:hosts', ql.component({
       }
       login = [
         h('header', [
+          ...(!state.settings.nav
+            ? [h('a.btn.icon', { on: { click: shownav }, attrs: { href: '#' } }, '⇥')]
+            : []
+          ),
           h('h1', 'Connect')
         ]),
         h('form', { on: { submit: submitlogin } }, [
@@ -187,12 +206,8 @@ inject('page:hosts', ql.component({
         ])
       ]
     }
-    const refresh = (e) => {
-      e.preventDefault()
-      hub.emit('refresh all')
-    }
     document.title = `Hosts · Tumu`
-    return h('div.wrapper', [
+    return h('div.wrapper', { class: { 'nav-off': !state.settings.nav } }, [
       h('nav', [
         h('h1', 'Hosts'),
         h('ul.select', Object.keys(state.hosts).map((host) => {
@@ -207,7 +222,8 @@ inject('page:hosts', ql.component({
           ]))
         })),
         h('div.page-actions', [
-          h('a.btn.icon', { on: { click: refresh }, attrs: { href: '#' } }, '↻')
+          h('a.btn.icon', { on: { click: refresh }, attrs: { href: '#' } }, '↻'),
+          h('a.btn.icon', { on: { click: hidenav }, attrs: { href: '#' } }, '⇤')
         ])
       ]),
       h('article', login)

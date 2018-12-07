@@ -43,7 +43,8 @@ inject('page:host', ql.component({
       status: ql.query('status', {
         host: params.host,
         token: hosts[params.host].token
-      })
+      }),
+      settings: ql.query('settings')
     }
   },
   render: (state, params, hub) => {
@@ -55,7 +56,17 @@ inject('page:host', ql.component({
       e.preventDefault()
       hub.emit('refresh all')
     }
-    return h('div.wrapper', [
+    const hidenav = (e) => {
+      e.preventDefault()
+      hub.emit('update settings', { nav: false })
+        .then(() => hub.emit('update'))
+    }
+    const shownav = (e) => {
+      e.preventDefault()
+      hub.emit('update settings', { nav: true })
+        .then(() => hub.emit('update'))
+    }
+    return h('div.wrapper', { class: { 'nav-off': !state.settings.nav } }, [
       h('nav', [
         h('header', [
           h('a.btn.icon', { attrs: { href: `/` } }, '←'),
@@ -74,7 +85,16 @@ inject('page:host', ql.component({
         })),
         h('div.page-actions', [
           h('a.btn.icon', { on: { click: refresh }, attrs: { href: '#' } }, '↻'),
-          //h('a.btn.icon', { attrs: { href: '#' } }, '＋')
+          //h('a.btn.icon', { attrs: { href: '#' } }, '＋'),
+          h('a.btn.icon', { on: { click: hidenav }, attrs: { href: '#' } }, '⇤')
+        ])
+      ]),
+      h('article', [
+        h('header', [
+          ...(!state.settings.nav
+            ? [h('a.btn.icon', { on: { click: shownav }, attrs: { href: '#' } }, '⇥')]
+            : []
+          )
         ])
       ])
     ])

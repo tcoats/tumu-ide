@@ -5,9 +5,9 @@ const route = require('odo-route')
 
 inject('page:error', ql.component({
   render: (state, params, hub) => {
-    return h('div.wrapper', [
+    return h('div.wrapper.nav-off', h('article', [
       h('h1', 'Error'),
-      h('p', params.message)
-    ])
+      h('p.error-message', params.message)
+    ]))
   }
 }))
