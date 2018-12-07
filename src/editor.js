@@ -134,19 +134,14 @@ inject('page:editor', ql.component({
       } }, [
       h('nav', [
         h('header', [
-          h('a.btn.icon', { attrs: { href: `/host/${encodeURIComponent(params.host)}/` } }, '←'),
-          h('h1', 'Applications')
+          h('a.btn.icon', { attrs: { href: `/host/${encodeURIComponent(params.host)}/workspace/${workspace.workspaceId}/` } }, '←'),
+          h('h1', workspace.name)
         ]),
+        h('a.select', { attrs: { href: `/host/${encodeURIComponent(params.host)}/workspace/${workspace.workspaceId}/` } }, 'Canvas'),
+        h('a.select', { attrs: { href: `/host/${encodeURIComponent(params.host)}/workspace/${workspace.workspaceId}/settings/` } }, 'Workspace settings'),
+        h('h2', 'Applications'),
         h('ul.select', workspace.apps.map((a) => {
-          const action = (e) => {
-            e.preventDefault()
-            e.stopPropagation()
-            console.log('TODO: App actions')
-          }
-          return h('li', h('a', { class: { selected: a.appId == app.appId }, attrs: { title: `ID: ${a.appId}`, href: `/host/${encodeURIComponent(params.host)}/workspace/${workspace.workspaceId}/app/${a.appId}/` } }, [
-            `${a.name}`,
-            h('div.action', { on: { click: action } }, '…')
-          ]))
+          return h('li', h('a', { class: { selected: a.appId == app.appId }, attrs: { title: `ID: ${a.appId}`, href: `/host/${encodeURIComponent(params.host)}/workspace/${workspace.workspaceId}/app/${a.appId}/` } }, `${a.name}`))
         })),
         h('div.page-actions', [
           h('a.btn.icon', { on: { click: refresh }, attrs: { href: '#' } }, '↻'),

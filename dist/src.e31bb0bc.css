@@ -812,6 +812,30 @@ h1 {
   font-size: 24px;
   line-height: 36px;
 }
+h2 {
+  font-weight: normal;
+  padding: 20px 15px 3px 15px;
+  margin: 0;
+  font-size: 20px;
+  line-height: 28px;
+  border-bottom: 1px solid #465b66;
+}
+a.select {
+  font-weight: normal;
+  padding: 10px 15px 3px 15px;
+  margin: 0;
+  margin-top: 10px;
+  font-size: 20px;
+  line-height: 28px;
+  display: block;
+  color: #dfe1e8;
+}
+a.select.selected {
+  background-color: #465b66;
+}
+a.select:hover {
+  background-color: #16232a;
+}
 header .icon {
   float: left;
   margin: 5px 10px 5px 5px;
@@ -867,34 +891,33 @@ form {
 .page-actions .btn {
   margin: 5px 5px 0 0;
 }
-.select {
+ul.select {
   list-style: none;
   margin: 0;
   padding: 0;
 }
-.select li > div,
-.select li > a {
+ul.select li > div,
+ul.select li > a {
   padding: 10px 15px;
   position: relative;
 }
-.select li a {
+ul.select li a {
   display: block;
   color: #dfe1e8;
-  text-decoration: none;
 }
-.select li a.selected {
+ul.select li a.selected {
   background-color: #465b66;
 }
-.select li a:hover {
+ul.select li a:hover {
   background-color: #16232a;
 }
-.select li div.action {
+ul.select li div.action {
   padding: 10px 15px;
   position: absolute;
   right: 0;
   top: 0;
 }
-.select li + li {
+ul.select li + li {
   border-top: 1px solid #465b66;
 }
 img.secret {

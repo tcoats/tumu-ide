@@ -2,7 +2,6 @@ const h = require('snabbdom/h').default
 const ql = require('odoql2')
 const inject = require('injectinto')
 const route = require('odo-route')
-const page = require('page')
 
 const connection = require('./connection')
 
@@ -16,28 +15,14 @@ const get = (key, value) => {
 }
 
 inject('pod', (hub, exe) => {
-  hub.on('workspace create', (params) => new Promise((resolve, reject) => {\
-    const socket = connection(params.host, params.token, {
-      open: () => socket.send('workspace_create', params.name),
-      workspace_created: (workspaceId) => {
-        socket.close()
-        resolve()
-        exe.clearQuery('status')
-        page(`/host/${encodeURIComponent(params.host)}/workspace/${workspaceId}/`)
-      },
-      socketError: (err) => {
-        socket.close()
-        reject(err)
-      }
-    })
-  }))
+
 })
 
-route('/host/:host/workspace/:workspace/settings/', (p) => {
-  return { page: 'workspace', host: p.params.host, workspace: p.params.workspace }
+route('/host/:host/workspace/:workspace/', (p) => {
+  return { page: 'canvas', host: p.params.host, workspace: p.params.workspace }
 })
 
-inject('page:workspace', ql.component({
+inject('page:canvas', ql.component({
   query: (state, params) => {
     const hosts = get('hosts', {})
     if (!hosts[params.host]) return {}
@@ -78,8 +63,8 @@ inject('page:workspace', ql.component({
           h('a.btn.icon', { attrs: { href: `/host/${encodeURIComponent(params.host)}/` } }, '←'),
           h('h1', workspace.name)
         ]),
-        h('a.select', { attrs: { href: `/host/${encodeURIComponent(params.host)}/workspace/${workspace.workspaceId}/` } }, 'Canvas'),
-        h('a.select.selected', { attrs: { href: `/host/${encodeURIComponent(params.host)}/workspace/${workspace.workspaceId}/settings/` } }, 'Workspace settings'),
+        h('a.select.selected', { attrs: { href: `/host/${encodeURIComponent(params.host)}/workspace/${workspace.workspaceId}/` } }, 'Canvas'),
+        h('a.select', { attrs: { href: `/host/${encodeURIComponent(params.host)}/workspace/${workspace.workspaceId}/settings/` } }, 'Workspace settings'),
         h('h2', 'Applications'),
         h('ul.select', workspace.apps.map((app) => {
           return h('li', h('a', { attrs: { title: `ID: ${app.appId}`, href: `/host/${encodeURIComponent(params.host)}/workspace/${workspace.workspaceId}/app/${app.appId}/` } }, `${app.name}`))

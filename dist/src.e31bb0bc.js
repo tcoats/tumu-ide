@@ -7905,22 +7905,12 @@ inject('page:hosts', ql.component({
         'nav-off': !state.settings.nav
       }
     }, [h('nav', [h('h1', 'Hosts'), h('ul.select', Object.keys(state.hosts).map(function (host) {
-      var action = function action(e) {
-        e.preventDefault();
-        e.stopPropagation();
-        page("/host/".concat(encodeURIComponent(host), "/edit/"));
-      };
-
       return h('li', h('a', {
         attrs: {
           title: "Logged in as ".concat(state.hosts[host].emailAddress),
           href: "/host/".concat(encodeURIComponent(host), "/")
         }
-      }, ["".concat(host.split('://')[1]), h('div.action', {
-        on: {
-          click: action
-        }
-      }, '…')]));
+      }, ["".concat(host.split('://')[1])]));
     })), h('div.page-actions', [h('a.btn.icon', {
       on: {
         click: refresh
@@ -7998,6 +7988,7 @@ inject('page:host', ql.component({
     var hosts = get('hosts', {});
     if (!hosts[params.host]) return {};
     return {
+      hosts: ql.query('hosts'),
       status: ql.query('status', {
         host: params.host,
         token: hosts[params.host].token
@@ -8009,6 +8000,7 @@ inject('page:host', ql.component({
     if (!state.status) return inject.one('page:error')(state, {
       message: 'Host not found'
     }, hub);
+    var host = state.hosts[params.host];
     var nicehost = params.host.split('://')[1];
     document.title = "".concat(nicehost, " \xB7 Tumu");
 
@@ -8035,6 +8027,91 @@ inject('page:host', ql.component({
       });
     };
 
+    var logout = function logout(e) {
+      e.preventDefault();
+      hub.emit('logout', host).then(function () {
+        return page('/');
+      });
+    };
+
+    var article = null;
+
+    if (params.iscreateworkspace) {
+      var create = function create(e) {
+        e.preventDefault();
+        if (!params.name) return;
+        hub.emit('workspace create', {
+          host: params.host,
+          token: host.token,
+          name: params.name
+        });
+      };
+
+      var updateName = function updateName(e) {
+        hub.emit('update', {
+          name: e.target.value
+        });
+      };
+
+      article = h('article', [h('header', _toConsumableArray(!state.settings.nav ? [h('a.btn.icon', {
+        on: {
+          click: shownav
+        },
+        attrs: {
+          href: '#'
+        }
+      }, '⇥')] : []).concat([h('h1', 'Creating new workspace')])), h('form', {
+        on: {
+          submit: create
+        }
+      }, [h('label', 'Workspace Name'), h('input', {
+        on: {
+          keyup: updateName
+        },
+        attrs: {
+          type: 'text',
+          autofocus: true
+        },
+        props: {
+          value: params.name || ''
+        }
+      }), h('div.page-actions', [h('button.btn', {
+        on: {
+          click: create
+        }
+      }, 'Create')])])]);
+    } else {
+      var createstart = function createstart(e) {
+        e.preventDefault();
+        hub.emit('update', {
+          iscreateworkspace: true
+        });
+      };
+
+      article = h('article', [h('header', _toConsumableArray(!state.settings.nav ? [h('a.btn.icon', {
+        on: {
+          click: shownav
+        },
+        attrs: {
+          href: '#'
+        }
+      }, '⇥')] : []).concat([h('p', "Logged in as: ".concat(state.hosts[params.host].emailAddress)), h('p', h('a.btn', {
+        on: {
+          click: logout
+        },
+        attrs: {
+          href: '#'
+        }
+      }, "Logout of ".concat(nicehost))), h('p', h('a.btn', {
+        on: {
+          click: createstart
+        },
+        attrs: {
+          href: '#'
+        }
+      }, 'Create new workspace'))]))]);
+    }
+
     return h('div.wrapper', {
       class: {
         'nav-off': !state.settings.nav
@@ -8043,23 +8120,17 @@ inject('page:host', ql.component({
       attrs: {
         href: "/"
       }
-    }, '←'), h('h1', "Workspaces")]), h('ul.select', state.status.workspaces.map(function (workspace) {
-      var action = function action(e) {
-        e.preventDefault();
-        e.stopPropagation();
-        console.log('TODO: Workspace actions');
-      };
-
+    }, '←'), h('h1', nicehost)]), h('a.select.selected', {
+      attrs: {
+        href: "/host/".concat(encodeURIComponent(params.host), "/")
+      }
+    }, 'Host settings'), h('h2', 'Workspaces'), h('ul.select', state.status.workspaces.map(function (workspace) {
       return h('li', h('a', {
         attrs: {
           title: "ID: ".concat(workspace.workspaceId),
           href: "/host/".concat(encodeURIComponent(params.host), "/workspace/").concat(workspace.workspaceId, "/")
         }
-      }, ["".concat(workspace.name), h('div.action', {
-        on: {
-          click: action
-        }
-      }, '…')]));
+      }, workspace.name));
     })), h('div.page-actions', [h('a.btn.icon', {
       on: {
         click: refresh
@@ -8075,17 +8146,10 @@ inject('page:host', ql.component({
       attrs: {
         href: '#'
       }
-    }, '⇤')])]), h('article', [h('header', _toConsumableArray(!state.settings.nav ? [h('a.btn.icon', {
-      on: {
-        click: shownav
-      },
-      attrs: {
-        href: '#'
-      }
-    }, '⇥')] : []))])]);
+    }, '⇤')])]), article]);
   }
 }));
-},{"snabbdom/h":"../node_modules/snabbdom/h.js","odoql2":"../node_modules/odoql2/index.js","injectinto":"../node_modules/injectinto/inject.js","odo-route":"../node_modules/odo-route/index.js","page":"../node_modules/page/page.js","./connection":"connection.js"}],"hostedit.js":[function(require,module,exports) {
+},{"snabbdom/h":"../node_modules/snabbdom/h.js","odoql2":"../node_modules/odoql2/index.js","injectinto":"../node_modules/injectinto/inject.js","odo-route":"../node_modules/odo-route/index.js","page":"../node_modules/page/page.js","./connection":"connection.js"}],"workspace.js":[function(require,module,exports) {
 function _toConsumableArray(arr) { return _arrayWithoutHoles(arr) || _iterableToArray(arr) || _nonIterableSpread(); }
 
 function _nonIterableSpread() { throw new TypeError("Invalid attempt to spread non-iterable instance"); }
@@ -8104,120 +8168,6 @@ var route = require('odo-route');
 
 var page = require('page');
 
-route('/host/:host/edit/', function (p) {
-  return {
-    page: 'host:edit',
-    host: p.params.host
-  };
-});
-inject('page:host:edit', ql.component({
-  query: function query(state, params) {
-    return {
-      hosts: ql.query('hosts'),
-      settings: ql.query('settings')
-    };
-  },
-  render: function render(state, params, hub) {
-    var refresh = function refresh(e) {
-      e.preventDefault();
-      hub.emit('refresh all');
-    };
-
-    var hidenav = function hidenav(e) {
-      e.preventDefault();
-      hub.emit('update settings', {
-        nav: false
-      }).then(function () {
-        return hub.emit('update');
-      });
-    };
-
-    var shownav = function shownav(e) {
-      e.preventDefault();
-      hub.emit('update settings', {
-        nav: true
-      }).then(function () {
-        return hub.emit('update');
-      });
-    };
-
-    var host = state.hosts[params.host];
-
-    var logout = function logout(e) {
-      e.preventDefault();
-      hub.emit('logout', host).then(function () {
-        return page('/');
-      });
-    };
-
-    var nicehost = params.host.split('://')[1];
-    document.title = "".concat(nicehost, " \xB7 Tumu");
-    return h('div.wrapper', {
-      class: {
-        'nav-off': !state.settings.nav
-      }
-    }, [h('nav', [h('h1', 'Hosts'), h('ul.select', Object.keys(state.hosts).map(function (host) {
-      var action = function action(e) {
-        e.preventDefault();
-        e.stopPropagation();
-        page("/host/".concat(encodeURIComponent(host), "/edit/"));
-      };
-
-      return h('li', h('a', {
-        attrs: {
-          title: "Logged in as ".concat(state.hosts[host].emailAddress),
-          href: "/host/".concat(encodeURIComponent(host), "/")
-        }
-      }, ["".concat(host.split('://')[1]), h('div.action', {
-        on: {
-          click: action
-        }
-      }, '…')]));
-    })), h('div.page-actions', [h('a.btn.icon', {
-      on: {
-        click: refresh
-      },
-      attrs: {
-        href: '#'
-      }
-    }, '↻'), h('a.btn.icon', {
-      on: {
-        click: hidenav
-      },
-      attrs: {
-        href: '#'
-      }
-    }, '⇤')])]), h('article', [h('header', _toConsumableArray(!state.settings.nav ? [h('a.btn.icon', {
-      on: {
-        click: shownav
-      },
-      attrs: {
-        href: '#'
-      }
-    }, '⇥')] : []).concat([h('h1', nicehost)])), h('p', "Logged in as: ".concat(state.hosts[params.host].emailAddress)), h('div.page-actions', [h('button.btn', {
-      on: {
-        click: logout
-      }
-    }, 'Logout')])])]);
-  }
-}));
-},{"snabbdom/h":"../node_modules/snabbdom/h.js","odoql2":"../node_modules/odoql2/index.js","injectinto":"../node_modules/injectinto/inject.js","odo-route":"../node_modules/odo-route/index.js","page":"../node_modules/page/page.js"}],"workspace.js":[function(require,module,exports) {
-function _toConsumableArray(arr) { return _arrayWithoutHoles(arr) || _iterableToArray(arr) || _nonIterableSpread(); }
-
-function _nonIterableSpread() { throw new TypeError("Invalid attempt to spread non-iterable instance"); }
-
-function _iterableToArray(iter) { if (Symbol.iterator in Object(iter) || Object.prototype.toString.call(iter) === "[object Arguments]") return Array.from(iter); }
-
-function _arrayWithoutHoles(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = new Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } }
-
-var h = require('snabbdom/h').default;
-
-var ql = require('odoql2');
-
-var inject = require('injectinto');
-
-var route = require('odo-route');
-
 var connection = require('./connection');
 
 var get = function get(key, value) {
@@ -8229,8 +8179,29 @@ var get = function get(key, value) {
   return value;
 };
 
-inject('pod', function (hub, exe) {});
-route('/host/:host/workspace/:workspace/', function (p) {
+inject('pod', function (hub, exe) {
+  hub.on('workspace create', function (params) {
+    return new Promise(function (resolve, reject) {
+      console.log(params.name);
+      var socket = connection(params.host, params.token, {
+        open: function open() {
+          return socket.send('workspace_create', params.name);
+        },
+        workspace_created: function workspace_created(workspaceId) {
+          socket.close();
+          resolve();
+          exe.clearQuery('status');
+          page("/host/".concat(encodeURIComponent(params.host), "/workspace/").concat(workspaceId, "/"));
+        },
+        socketError: function socketError(err) {
+          socket.close();
+          reject(err);
+        }
+      });
+    });
+  });
+});
+route('/host/:host/workspace/:workspace/settings/', function (p) {
   return {
     page: 'workspace',
     host: p.params.host,
@@ -8314,23 +8285,174 @@ inject('page:workspace', ql.component({
       attrs: {
         href: "/host/".concat(encodeURIComponent(params.host), "/")
       }
-    }, '←'), h('h1', 'Applications')]), h('ul.select', workspace.apps.map(function (app) {
-      var action = function action(e) {
-        e.preventDefault();
-        e.stopPropagation();
-        console.log('TODO: App actions');
-      };
-
+    }, '←'), h('h1', workspace.name)]), h('a.select', {
+      attrs: {
+        href: "/host/".concat(encodeURIComponent(params.host), "/workspace/").concat(workspace.workspaceId, "/")
+      }
+    }, 'Canvas'), h('a.select.selected', {
+      attrs: {
+        href: "/host/".concat(encodeURIComponent(params.host), "/workspace/").concat(workspace.workspaceId, "/settings/")
+      }
+    }, 'Workspace settings'), h('h2', 'Applications'), h('ul.select', workspace.apps.map(function (app) {
       return h('li', h('a', {
         attrs: {
           title: "ID: ".concat(app.appId),
           href: "/host/".concat(encodeURIComponent(params.host), "/workspace/").concat(workspace.workspaceId, "/app/").concat(app.appId, "/")
         }
-      }, ["".concat(app.name), h('div.action', {
-        on: {
-          click: action
+      }, "".concat(app.name)));
+    })), h('div.page-actions', [h('a.btn.icon', {
+      on: {
+        click: refresh
+      },
+      attrs: {
+        href: '#'
+      }
+    }, '↻'), //h('a.btn.icon', { attrs: { href: '#' } }, '＋'),
+    h('a.btn.icon', {
+      on: {
+        click: hidenav
+      },
+      attrs: {
+        href: '#'
+      }
+    }, '⇤')])]), h('article', [h('header', _toConsumableArray(!state.settings.nav ? [h('a.btn.icon', {
+      on: {
+        click: shownav
+      },
+      attrs: {
+        href: '#'
+      }
+    }, '⇥')] : []))])]);
+  }
+}));
+},{"snabbdom/h":"../node_modules/snabbdom/h.js","odoql2":"../node_modules/odoql2/index.js","injectinto":"../node_modules/injectinto/inject.js","odo-route":"../node_modules/odo-route/index.js","page":"../node_modules/page/page.js","./connection":"connection.js"}],"canvas.js":[function(require,module,exports) {
+function _toConsumableArray(arr) { return _arrayWithoutHoles(arr) || _iterableToArray(arr) || _nonIterableSpread(); }
+
+function _nonIterableSpread() { throw new TypeError("Invalid attempt to spread non-iterable instance"); }
+
+function _iterableToArray(iter) { if (Symbol.iterator in Object(iter) || Object.prototype.toString.call(iter) === "[object Arguments]") return Array.from(iter); }
+
+function _arrayWithoutHoles(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = new Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } }
+
+var h = require('snabbdom/h').default;
+
+var ql = require('odoql2');
+
+var inject = require('injectinto');
+
+var route = require('odo-route');
+
+var connection = require('./connection');
+
+var get = function get(key, value) {
+  try {
+    var result = JSON.parse(localStorage.getItem(key));
+    if (result) return result;
+  } catch (e) {}
+
+  return value;
+};
+
+inject('pod', function (hub, exe) {});
+route('/host/:host/workspace/:workspace/', function (p) {
+  return {
+    page: 'canvas',
+    host: p.params.host,
+    workspace: p.params.workspace
+  };
+});
+inject('page:canvas', ql.component({
+  query: function query(state, params) {
+    var hosts = get('hosts', {});
+    if (!hosts[params.host]) return {};
+    return {
+      status: ql.query('status', {
+        host: params.host,
+        token: hosts[params.host].token
+      }),
+      settings: ql.query('settings')
+    };
+  },
+  render: function render(state, params, hub) {
+    if (!state.status) state.status = {
+      workspaces: []
+    };
+    var workspace = null;
+    var _iteratorNormalCompletion = true;
+    var _didIteratorError = false;
+    var _iteratorError = undefined;
+
+    try {
+      for (var _iterator = state.status.workspaces[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
+        var w = _step.value;
+        if (w.workspaceId == params.workspace) workspace = w;
+      }
+    } catch (err) {
+      _didIteratorError = true;
+      _iteratorError = err;
+    } finally {
+      try {
+        if (!_iteratorNormalCompletion && _iterator.return != null) {
+          _iterator.return();
         }
-      }, '…')]));
+      } finally {
+        if (_didIteratorError) {
+          throw _iteratorError;
+        }
+      }
+    }
+
+    if (!workspace) return inject.one('page:error')(state, {
+      message: 'Workspace not found'
+    }, hub);
+    document.title = "".concat(workspace.name, " \xB7 Tumu");
+
+    var refresh = function refresh(e) {
+      e.preventDefault();
+      hub.emit('refresh all');
+    };
+
+    var hidenav = function hidenav(e) {
+      e.preventDefault();
+      hub.emit('update settings', {
+        nav: false
+      }).then(function () {
+        return hub.emit('update');
+      });
+    };
+
+    var shownav = function shownav(e) {
+      e.preventDefault();
+      hub.emit('update settings', {
+        nav: true
+      }).then(function () {
+        return hub.emit('update');
+      });
+    };
+
+    return h('div.wrapper', {
+      class: {
+        'nav-off': !state.settings.nav
+      }
+    }, [h('nav', [h('header', [h('a.btn.icon', {
+      attrs: {
+        href: "/host/".concat(encodeURIComponent(params.host), "/")
+      }
+    }, '←'), h('h1', workspace.name)]), h('a.select.selected', {
+      attrs: {
+        href: "/host/".concat(encodeURIComponent(params.host), "/workspace/").concat(workspace.workspaceId, "/")
+      }
+    }, 'Canvas'), h('a.select', {
+      attrs: {
+        href: "/host/".concat(encodeURIComponent(params.host), "/workspace/").concat(workspace.workspaceId, "/settings/")
+      }
+    }, 'Workspace settings'), h('h2', 'Applications'), h('ul.select', workspace.apps.map(function (app) {
+      return h('li', h('a', {
+        attrs: {
+          title: "ID: ".concat(app.appId),
+          href: "/host/".concat(encodeURIComponent(params.host), "/workspace/").concat(workspace.workspaceId, "/app/").concat(app.appId, "/")
+        }
+      }, "".concat(app.name)));
     })), h('div.page-actions', [h('a.btn.icon', {
       on: {
         click: refresh
@@ -19212,15 +19334,17 @@ inject('page:editor', ql.component({
       }
     }, [h('nav', [h('header', [h('a.btn.icon', {
       attrs: {
-        href: "/host/".concat(encodeURIComponent(params.host), "/")
+        href: "/host/".concat(encodeURIComponent(params.host), "/workspace/").concat(workspace.workspaceId, "/")
       }
-    }, '←'), h('h1', 'Applications')]), h('ul.select', workspace.apps.map(function (a) {
-      var action = function action(e) {
-        e.preventDefault();
-        e.stopPropagation();
-        console.log('TODO: App actions');
-      };
-
+    }, '←'), h('h1', workspace.name)]), h('a.select', {
+      attrs: {
+        href: "/host/".concat(encodeURIComponent(params.host), "/workspace/").concat(workspace.workspaceId, "/")
+      }
+    }, 'Canvas'), h('a.select', {
+      attrs: {
+        href: "/host/".concat(encodeURIComponent(params.host), "/workspace/").concat(workspace.workspaceId, "/settings/")
+      }
+    }, 'Workspace settings'), h('h2', 'Applications'), h('ul.select', workspace.apps.map(function (a) {
       return h('li', h('a', {
         class: {
           selected: a.appId == app.appId
@@ -19229,11 +19353,7 @@ inject('page:editor', ql.component({
           title: "ID: ".concat(a.appId),
           href: "/host/".concat(encodeURIComponent(params.host), "/workspace/").concat(workspace.workspaceId, "/app/").concat(a.appId, "/")
         }
-      }, ["".concat(a.name), h('div.action', {
-        on: {
-          click: action
-        }
-      }, '…')]));
+      }, "".concat(a.name)));
     })), h('div.page-actions', [h('a.btn.icon', {
       on: {
         click: refresh
@@ -20549,9 +20669,9 @@ require('./hosts');
 
 require('./host');
 
-require('./hostedit');
-
 require('./workspace');
+
+require('./canvas');
 
 require('./editor');
 
@@ -20673,5 +20793,5 @@ if (window.location.pathname == '/') {
     });
   }); // page.start({ dispatch: false })
 } else page();
-},{"./index.styl":"index.styl","./hosts":"hosts.js","./host":"host.js","./hostedit":"hostedit.js","./workspace":"workspace.js","./editor":"editor.js","./error":"error.js","./settings":"settings.js","snabbdom":"../node_modules/snabbdom/es/snabbdom.js","snabbdom/modules/class":"../node_modules/snabbdom/modules/class.js","snabbdom/modules/props":"../node_modules/snabbdom/modules/props.js","snabbdom/modules/attributes":"../node_modules/snabbdom/modules/attributes.js","snabbdom/modules/style":"../node_modules/snabbdom/modules/style.js","snabbdom/modules/eventlisteners":"../node_modules/snabbdom/modules/eventlisteners.js","odo-hub":"../node_modules/odo-hub/index.js","injectinto":"../node_modules/injectinto/inject.js","odoql2":"../node_modules/odoql2/index.js","odoql2/exe":"../node_modules/odoql2/exe.js","page":"../node_modules/page/page.js","odo-route":"../node_modules/odo-route/index.js"}]},{},["index.js"], null)
+},{"./index.styl":"index.styl","./hosts":"hosts.js","./host":"host.js","./workspace":"workspace.js","./canvas":"canvas.js","./editor":"editor.js","./error":"error.js","./settings":"settings.js","snabbdom":"../node_modules/snabbdom/es/snabbdom.js","snabbdom/modules/class":"../node_modules/snabbdom/modules/class.js","snabbdom/modules/props":"../node_modules/snabbdom/modules/props.js","snabbdom/modules/attributes":"../node_modules/snabbdom/modules/attributes.js","snabbdom/modules/style":"../node_modules/snabbdom/modules/style.js","snabbdom/modules/eventlisteners":"../node_modules/snabbdom/modules/eventlisteners.js","odo-hub":"../node_modules/odo-hub/index.js","injectinto":"../node_modules/injectinto/inject.js","odoql2":"../node_modules/odoql2/index.js","odoql2/exe":"../node_modules/odoql2/exe.js","page":"../node_modules/page/page.js","odo-route":"../node_modules/odo-route/index.js"}]},{},["index.js"], null)
 //# sourceMappingURL=/src.e31bb0bc.map

@@ -3,8 +3,8 @@ import classes from './index.styl'
 // extension points
 require('./hosts')
 require('./host')
-require('./hostedit')
 require('./workspace')
+require('./canvas')
 require('./editor')
 require('./error')
 require('./settings')
