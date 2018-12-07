@@ -47,22 +47,26 @@ inject('page:workspace', ql.component({
       hub.emit('refresh all')
     }
     return h('div.wrapper', [
-      h('h1', 'Applications'),
-      h('ul.select', workspace.apps.map((app) => {
-        const action = (e) => {
-          e.preventDefault()
-          e.stopPropagation()
-          console.log('TODO: App actions')
-        }
-        return h('li', h('a', { attrs: { title: `ID: ${app.appId}`, href: `/host/${encodeURIComponent(params.host)}/workspace/${workspace.workspaceId}/app/${app.appId}/` } }, [
-          `${app.name}`,
-          h('div.action', { on: { click: action } }, '…')
-        ]))
-      })),
-      h('div.page-actions', [
-        h('a.btn.icon', { on: { click: refresh }, attrs: { href: '#' } }, '↻'),
-        //h('a.btn.icon', { attrs: { href: '#' } }, '＋'),
-        h('a.btn.icon', { attrs: { href: `/host/${encodeURIComponent(params.host)}/` } }, '✕')
+      h('nav', [
+        h('header', [
+          h('a.btn.icon', { attrs: { href: `/host/${encodeURIComponent(params.host)}/` } }, '←'),
+          h('h1', 'Applications')
+        ]),
+        h('ul.select', workspace.apps.map((app) => {
+          const action = (e) => {
+            e.preventDefault()
+            e.stopPropagation()
+            console.log('TODO: App actions')
+          }
+          return h('li', h('a', { attrs: { title: `ID: ${app.appId}`, href: `/host/${encodeURIComponent(params.host)}/workspace/${workspace.workspaceId}/app/${app.appId}/` } }, [
+            `${app.name}`,
+            h('div.action', { on: { click: action } }, '…')
+          ]))
+        })),
+        h('div.page-actions', [
+          h('a.btn.icon', { on: { click: refresh }, attrs: { href: '#' } }, '↻'),
+          //h('a.btn.icon', { attrs: { href: '#' } }, '＋')
+        ])
       ])
     ])
   }

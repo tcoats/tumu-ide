@@ -107,37 +107,43 @@ inject('page:editor', ql.component({
       e.preventDefault()
       hub.emit('refresh all', { code: null })
     }
-    return h('div.wrapper', [
-      h('div', {
-        hook: {
-          insert: (vnode) => {
-            vnode.data.codemirror = codemirror(
-              (el) => {
-                vnode.elm.parentNode.replaceChild(el, vnode.elm)
-                vnode.elm = el
-              },
-              {
-                value: code,
-                mode: 'javascript',
-                tabSize: 2,
-                lineWrapping: true,
-                lineNumbers: true
+    return h('div.wrapper.nav-off', [
+      h('nav', ['Hello']),
+      h('article', [
+        h('div', {
+          hook: {
+            insert: (vnode) => {
+              vnode.data.codemirror = codemirror(
+                (el) => {
+                  vnode.elm.parentNode.replaceChild(el, vnode.elm)
+                  vnode.elm = el
+                },
+                {
+                  value: code,
+                  mode: 'javascript',
+                  tabSize: 2,
+                  lineWrapping: true,
+                  lineNumbers: true,
+                  autofocus: true,
+                  smartIndent: false,
+                  electricChars: false
+                })
+              vnode.data.codemirror.on('change', (instance) => {
+                if (instance.issetting) return instance.issetting = false
+                hub.emit('update', { code: instance.getValue() })
               })
-            vnode.data.codemirror.on('change', (instance) => {
-              if (instance.issetting) return instance.issetting = false
-              hub.emit('update', { code: instance.getValue() })
-            })
-          },
-          postpatch: (oldVnode, vnode) => {
-            const instance = oldVnode.data.codemirror
-            vnode.data.codemirror = instance
-            if (params.code == null || params.code == undefined) {
-              instance.issetting = true
-              instance.setValue(code)
+            },
+            postpatch: (oldVnode, vnode) => {
+              const instance = oldVnode.data.codemirror
+              vnode.data.codemirror = instance
+              if (params.code == null || params.code == undefined) {
+                instance.issetting = true
+                instance.setValue(code)
+              }
             }
           }
-        }
-      }),
+        })
+      ]),
       h('div.page-actions', [
         h('a.btn.icon', { on: { click: upload }, attrs: { title: 'Upload', href: '#' } }, '↑'),
         h('a.btn.icon', { on: { click: refresh }, attrs: { href: '#' } }, '↻'),

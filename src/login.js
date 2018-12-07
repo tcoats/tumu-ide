@@ -101,25 +101,29 @@ inject('page:login', ql.component({
         })
       }
       return h('div.wrapper', [
-        h('h1', `Connecting to ${params.host}`),
-        h('form', { on: { submit: loginCode } }, [
-          ...(params.secret ? [
-            h('label', 'Authenticator secret'),
-            h('img.secret', { attrs: { src: params.secretSrc }}),
-            h('div.secret', params.secret)
-          ]: []),
-          h('label', 'Authenticator code'),
-          h('input', {
-            on: { keyup: updateCode },
-            attrs: {
-              type: 'text',
-              placeholder: 'e.g. 123456',
-              autofocus: true
-            },
-            props: { value: params.code || '' }}),
-          h('div.page-actions', [
-            h('a.btn.icon', { attrs: { href: '/' } }, '✕'),
-            h('button.btn', { on: { click: loginCode } }, 'Login')
+        h('nav', [
+          h('header', [
+            h('a.btn.icon', { attrs: { href: `/` } }, '←'),
+            h('h1', `${params.host}`)
+          ]),
+          h('form', { on: { submit: loginCode } }, [
+            ...(params.secret ? [
+              h('label', 'Authenticator secret'),
+              h('img.secret', { attrs: { src: params.secretSrc }}),
+              h('div.secret', params.secret)
+            ]: []),
+            h('label', 'Authenticator code'),
+            h('input', {
+              on: { keyup: updateCode },
+              attrs: {
+                type: 'text',
+                placeholder: 'e.g. 123456',
+                autofocus: true
+              },
+              props: { value: params.code || '' }}),
+            h('div.page-actions', [
+              h('button.btn', { on: { click: loginCode } }, 'Login')
+            ])
           ])
         ])
       ])
@@ -136,26 +140,30 @@ inject('page:login', ql.component({
       hub.emit('login', { host: params.host, emailAddress: params.emailAddress })
     }
     return h('div.wrapper', [
-      h('h1', 'Connect'),
-      h('form', { on: { submit: login } }, [
-        h('label', 'Host'),
-        h('input', {
-          on: { keyup: updatehost },
-          attrs: {
-            type: 'text',
-            autofocus: true,
-            placeholder: 'e.g. localhost:8081',
-            value: params.host } }),
-        h('label', 'Email address'),
-        h('input', {
-          on: { keyup: updateEmailAddress },
-          attrs: {
-            type: 'text',
-            placeholder: 'e.g. bob@example.com',
-            value: params.emailAddress } }),
-        h('div.page-actions', [
-          h('a.btn.icon', { attrs: { href: '/' } }, '✕'),
-          h('button.btn', 'Login')
+      h('nav', [
+        h('header', [
+          h('a.btn.icon', { attrs: { href: `/` } }, '←'),
+          h('h1', 'Connect')
+        ]),
+        h('form', { on: { submit: login } }, [
+          h('label', 'Host'),
+          h('input', {
+            on: { keyup: updatehost },
+            attrs: {
+              type: 'text',
+              autofocus: true,
+              placeholder: 'e.g. localhost:8081',
+              value: params.host } }),
+          h('label', 'Email address'),
+          h('input', {
+            on: { keyup: updateEmailAddress },
+            attrs: {
+              type: 'text',
+              placeholder: 'e.g. bob@example.com',
+              value: params.emailAddress } }),
+          h('div.page-actions', [
+            h('button.btn', 'Login')
+          ])
         ])
       ])
     ])

@@ -2342,10 +2342,6 @@ inject('pod', function (hub, exe) {
     delete hosts[host];
     set('hosts', hosts);
   });
-  hub.on('refresh all', function (p) {
-    exe.clear();
-    hub.emit('update', p);
-  });
 });
 route('/', function (p) {
   return {
@@ -2365,7 +2361,7 @@ inject('page:hosts', ql.component({
     };
 
     document.title = "Hosts \xB7 Tumu";
-    return h('div.wrapper', [h('h1', 'Hosts'), h('ul.select', Object.keys(state.hosts).map(function (host) {
+    return h('div.wrapper', [h('nav', [h('h1', 'Hosts'), h('ul.select', Object.keys(state.hosts).map(function (host) {
       var action = function action(e) {
         e.preventDefault();
         e.stopPropagation();
@@ -2393,7 +2389,7 @@ inject('page:hosts', ql.component({
       attrs: {
         href: './login/'
       }
-    }, 'Connect')])]);
+    }, 'Connect')])]), h('article', [])]);
   }
 }));
 },{"snabbdom/h":"../node_modules/snabbdom/h.js","odoql2":"../node_modules/odoql2/index.js","injectinto":"../node_modules/injectinto/inject.js","odo-route":"../node_modules/odo-route/index.js","page":"../node_modules/page/page.js"}],"connection.js":[function(require,module,exports) {
@@ -2518,7 +2514,11 @@ inject('page:host', ql.component({
       hub.emit('refresh all');
     };
 
-    return h('div.wrapper', [h('h1', "Workspaces"), h('ul.select', state.status.workspaces.map(function (workspace) {
+    return h('div.wrapper', [h('nav', [h('header', [h('a.btn.icon', {
+      attrs: {
+        href: "/"
+      }
+    }, '←'), h('h1', "Workspaces")]), h('ul.select', state.status.workspaces.map(function (workspace) {
       var action = function action(e) {
         e.preventDefault();
         e.stopPropagation();
@@ -2542,12 +2542,7 @@ inject('page:host', ql.component({
       attrs: {
         href: '#'
       }
-    }, '↻'), //h('a.btn.icon', { attrs: { href: '#' } }, '＋'),
-    h('a.btn.icon', {
-      attrs: {
-        href: '/'
-      }
-    }, '✕')])]);
+    }, '↻')])])]);
   }
 }));
 },{"snabbdom/h":"../node_modules/snabbdom/h.js","odoql2":"../node_modules/odoql2/index.js","injectinto":"../node_modules/injectinto/inject.js","odo-route":"../node_modules/odo-route/index.js","./connection":"connection.js"}],"workspace.js":[function(require,module,exports) {
@@ -2628,7 +2623,11 @@ inject('page:workspace', ql.component({
       hub.emit('refresh all');
     };
 
-    return h('div.wrapper', [h('h1', 'Applications'), h('ul.select', workspace.apps.map(function (app) {
+    return h('div.wrapper', [h('nav', [h('header', [h('a.btn.icon', {
+      attrs: {
+        href: "/host/".concat(encodeURIComponent(params.host), "/")
+      }
+    }, '←'), h('h1', 'Applications')]), h('ul.select', workspace.apps.map(function (app) {
       var action = function action(e) {
         e.preventDefault();
         e.stopPropagation();
@@ -2652,12 +2651,7 @@ inject('page:workspace', ql.component({
       attrs: {
         href: '#'
       }
-    }, '↻'), //h('a.btn.icon', { attrs: { href: '#' } }, '＋'),
-    h('a.btn.icon', {
-      attrs: {
-        href: "/host/".concat(encodeURIComponent(params.host), "/")
-      }
-    }, '✕')])]);
+    }, '↻')])])]);
   }
 }));
 },{"snabbdom/h":"../node_modules/snabbdom/h.js","odoql2":"../node_modules/odoql2/index.js","injectinto":"../node_modules/injectinto/inject.js","odo-route":"../node_modules/odo-route/index.js","./connection":"connection.js"}],"../node_modules/codemirror/lib/codemirror.js":[function(require,module,exports) {
@@ -13464,7 +13458,7 @@ inject('page:editor', ql.component({
       });
     };
 
-    return h('div.wrapper', [h('div', {
+    return h('div.wrapper.nav-off', [h('nav', ['Hello']), h('article', [h('div', {
       hook: {
         insert: function insert(vnode) {
           vnode.data.codemirror = codemirror(function (el) {
@@ -13475,7 +13469,10 @@ inject('page:editor', ql.component({
             mode: 'javascript',
             tabSize: 2,
             lineWrapping: true,
-            lineNumbers: true
+            lineNumbers: true,
+            autofocus: true,
+            smartIndent: false,
+            electricChars: false
           });
           vnode.data.codemirror.on('change', function (instance) {
             if (instance.issetting) return instance.issetting = false;
@@ -13494,7 +13491,7 @@ inject('page:editor', ql.component({
           }
         }
       }
-    }), h('div.page-actions', [h('a.btn.icon', {
+    })]), h('div.page-actions', [h('a.btn.icon', {
       on: {
         click: upload
       },
@@ -18901,7 +18898,11 @@ inject('page:login', ql.component({
         });
       };
 
-      return h('div.wrapper', [h('h1', "Connecting to ".concat(params.host)), h('form', {
+      return h('div.wrapper', [h('nav', [h('header', [h('a.btn.icon', {
+        attrs: {
+          href: "/"
+        }
+      }, '←'), h('h1', "".concat(params.host))]), h('form', {
         on: {
           submit: loginCode
         }
@@ -18921,15 +18922,11 @@ inject('page:login', ql.component({
         props: {
           value: params.code || ''
         }
-      }), h('div.page-actions', [h('a.btn.icon', {
-        attrs: {
-          href: '/'
-        }
-      }, '✕'), h('button.btn', {
+      }), h('div.page-actions', [h('button.btn', {
         on: {
           click: loginCode
         }
-      }, 'Login')])]))]);
+      }, 'Login')])]))])]);
     }
 
     var updatehost = function updatehost(e) {
@@ -18953,7 +18950,11 @@ inject('page:login', ql.component({
       });
     };
 
-    return h('div.wrapper', [h('h1', 'Connect'), h('form', {
+    return h('div.wrapper', [h('nav', [h('header', [h('a.btn.icon', {
+      attrs: {
+        href: "/"
+      }
+    }, '←'), h('h1', 'Connect')]), h('form', {
       on: {
         submit: login
       }
@@ -18976,11 +18977,7 @@ inject('page:login', ql.component({
         placeholder: 'e.g. bob@example.com',
         value: params.emailAddress
       }
-    }), h('div.page-actions', [h('a.btn.icon', {
-      attrs: {
-        href: '/'
-      }
-    }, '✕'), h('button.btn', 'Login')])])]);
+    }), h('div.page-actions', [h('button.btn', 'Login')])])])]);
   }
 }));
 },{"snabbdom/h":"../node_modules/snabbdom/h.js","odoql2":"../node_modules/odoql2/index.js","injectinto":"../node_modules/injectinto/inject.js","odo-route":"../node_modules/odo-route/index.js","qrcode":"../node_modules/qrcode/lib/browser.js","page":"../node_modules/page/page.js","./connection":"connection.js","./fixhosturl":"fixhosturl.js"}],"error.js":[function(require,module,exports) {
@@ -18997,7 +18994,38 @@ inject('page:error', ql.component({
     return h('div.wrapper', [h('h1', 'Error'), h('p', params.message)]);
   }
 }));
-},{"snabbdom/h":"../node_modules/snabbdom/h.js","odoql2":"../node_modules/odoql2/index.js","injectinto":"../node_modules/injectinto/inject.js","odo-route":"../node_modules/odo-route/index.js"}],"../node_modules/snabbdom/es/vnode.js":[function(require,module,exports) {
+},{"snabbdom/h":"../node_modules/snabbdom/h.js","odoql2":"../node_modules/odoql2/index.js","injectinto":"../node_modules/injectinto/inject.js","odo-route":"../node_modules/odo-route/index.js"}],"settings.js":[function(require,module,exports) {
+var inject = require('injectinto');
+
+var get = function get(key, value) {
+  try {
+    var result = JSON.parse(localStorage.getItem(key));
+    if (result) return result;
+  } catch (e) {}
+
+  return value;
+};
+
+var set = function set(key, value) {
+  return localStorage.setItem(key, JSON.stringify(value));
+};
+
+var defaultSettings = {
+  nav: true,
+  info: false
+};
+inject('pod', function (hub, exe) {
+  exe.use('settings', function () {
+    return Promise.resolve(get('settings', defaultSettings));
+  });
+  hub.on('update settings', function (p) {
+    var settings = get('settings', defaultSettings);
+    Object.assign(settings, p);
+    set('settings', settings);
+    exe.clearQuery('settings');
+  });
+});
+},{"injectinto":"../node_modules/injectinto/inject.js"}],"../node_modules/snabbdom/es/vnode.js":[function(require,module,exports) {
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -20191,7 +20219,9 @@ require('./editor');
 
 require('./login');
 
-require('./error'); // snabbdom
+require('./error');
+
+require('./settings'); // snabbdom
 
 
 var patch = require('snabbdom').init([require('snabbdom/modules/class').default, require('snabbdom/modules/props').default, require('snabbdom/modules/attributes').default, require('snabbdom/modules/style').default, require('snabbdom/modules/eventlisteners').default]);
@@ -20236,6 +20266,10 @@ exe.on('update', function (results) {
 hub.on('update', function (p) {
   Object.assign(params, p);
   exe.run(inject.one("page:".concat(params.page)).query(state, params) || {});
+});
+hub.on('refresh all', function (p) {
+  exe.clear();
+  hub.emit('update', p);
 }); // url handling
 
 var page = require('page');
@@ -20303,5 +20337,5 @@ if (window.location.pathname == '/') {
     });
   }); // page.start({ dispatch: false })
 } else page();
-},{"./index.styl":"index.styl","./hosts":"hosts.js","./host":"host.js","./workspace":"workspace.js","./editor":"editor.js","./login":"login.js","./error":"error.js","snabbdom":"../node_modules/snabbdom/es/snabbdom.js","snabbdom/modules/class":"../node_modules/snabbdom/modules/class.js","snabbdom/modules/props":"../node_modules/snabbdom/modules/props.js","snabbdom/modules/attributes":"../node_modules/snabbdom/modules/attributes.js","snabbdom/modules/style":"../node_modules/snabbdom/modules/style.js","snabbdom/modules/eventlisteners":"../node_modules/snabbdom/modules/eventlisteners.js","odo-hub":"../node_modules/odo-hub/index.js","injectinto":"../node_modules/injectinto/inject.js","odoql2":"../node_modules/odoql2/index.js","odoql2/exe":"../node_modules/odoql2/exe.js","page":"../node_modules/page/page.js","odo-route":"../node_modules/odo-route/index.js"}]},{},["index.js"], null)
+},{"./index.styl":"index.styl","./hosts":"hosts.js","./host":"host.js","./workspace":"workspace.js","./editor":"editor.js","./login":"login.js","./error":"error.js","./settings":"settings.js","snabbdom":"../node_modules/snabbdom/es/snabbdom.js","snabbdom/modules/class":"../node_modules/snabbdom/modules/class.js","snabbdom/modules/props":"../node_modules/snabbdom/modules/props.js","snabbdom/modules/attributes":"../node_modules/snabbdom/modules/attributes.js","snabbdom/modules/style":"../node_modules/snabbdom/modules/style.js","snabbdom/modules/eventlisteners":"../node_modules/snabbdom/modules/eventlisteners.js","odo-hub":"../node_modules/odo-hub/index.js","injectinto":"../node_modules/injectinto/inject.js","odoql2":"../node_modules/odoql2/index.js","odoql2/exe":"../node_modules/odoql2/exe.js","page":"../node_modules/page/page.js","odo-route":"../node_modules/odo-route/index.js"}]},{},["index.js"], null)
 //# sourceMappingURL=/src.e31bb0bc.map

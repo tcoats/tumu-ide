@@ -7,6 +7,7 @@ require('./workspace')
 require('./editor')
 require('./login')
 require('./error')
+require('./settings')
 
 // snabbdom
 const patch = require('snabbdom').init([
@@ -45,6 +46,10 @@ exe.on('update', (results) => {
 hub.on('update', p => {
   Object.assign(params, p)
   exe.run(inject.one(`page:${params.page}`).query(state, params) || {})
+})
+hub.on('refresh all', (p) => {
+  exe.clear()
+  hub.emit('update', p)
 })
 
 // url handling

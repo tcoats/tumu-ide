@@ -34,14 +34,52 @@ body
   font-family Helvetica, sans-serif
   font-size 18px
 
+ref(name)
+  unquote("[") + name + unquote("]")
+
 .wrapper
+  display grid
+  grid-template-columns ref(nav) 320px ref(article) 1fr
+  grid-template-rows 1fr
   height 100%
+  overflow hidden
+  &.nav-off
+    grid-template-columns ref(article) 1fr
+    nav
+      display none
+    &.info-on
+      grid-template-columns ref(article) 1fr ref(info) 320px
+  &.info-on
+    grid-template-columns ref(nav) 320px ref(article) 1fr ref(info) 320px
+    .info
+      display block
+
+nav
+  grid-row 1 / 1
+  grid-column nav
+  position relative
+  background-color $bg2
+
+article
+  grid-row 1 / 1
+  grid-column article
+  position relative
+  overflow scroll
+
+.info
+  display none
 
 h1
   font-weight normal
-  padding 10px 15px
+  padding 7px 15px 3px 15px
   margin 0
   font-size 24px
+  line-height 36px
+
+header
+  .icon
+    float left
+    margin 5px 10px 5px 5px
 
 input[type=text]
   background-color $bg1
@@ -120,6 +158,7 @@ img.secret
 div.secret
   font-size 11px
   margin-bottom 15px
+  word-wrap break-word
 
 .CodeMirror
   background $bg1
