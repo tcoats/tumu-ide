@@ -39,7 +39,7 @@ inject('pod', (hub, exe) => {
         socket.close()
         console.error(err)
         if (err.message) alert(err.message)
-        else alert('Error')
+        else alert(JSON.stringify(err, Object.getOwnPropertyNames(err), 2))
       }
     })
   })
@@ -57,20 +57,19 @@ inject('pod', (hub, exe) => {
           emailAddress: params.emailAddress,
           token: token
         })
-        .then(() => hub.emit('select host', host))
-        .then(() => page('/'))
+        .then(() => page(`/host/${encodeURIComponent(host)}/`))
       },
       login_failure: (err) => {
         socket.close()
         console.error(err)
         if (err.message) alert(err.message)
-        else alert('Error')
+        else alert(JSON.stringify(err, Object.getOwnPropertyNames(err), 2))
       },
       socketError: (err) => {
         socket.close()
         console.error(err)
         if (err.message) alert(err.message)
-        else alert('Error')
+        else alert(JSON.stringify(err, Object.getOwnPropertyNames(err), 2))
       }
     })
   })
@@ -119,7 +118,7 @@ inject('page:login', ql.component({
             },
             props: { value: params.code || '' }}),
           h('div.page-actions', [
-            h('a.btn', { attrs: { href: '/' } }, 'Cancel'),
+            h('a.btn.icon', { attrs: { href: '/' } }, '✕'),
             h('button.btn', { on: { click: loginCode } }, 'Login')
           ])
         ])
@@ -137,7 +136,7 @@ inject('page:login', ql.component({
       hub.emit('login', { host: params.host, emailAddress: params.emailAddress })
     }
     return h('div.wrapper', [
-      h('h1', 'Connect to a tumu host'),
+      h('h1', 'Connect'),
       h('form', { on: { submit: login } }, [
         h('label', 'Host'),
         h('input', {
@@ -155,7 +154,7 @@ inject('page:login', ql.component({
             placeholder: 'e.g. bob@example.com',
             value: params.emailAddress } }),
         h('div.page-actions', [
-          h('a.btn', { attrs: { href: '/' } }, 'Cancel'),
+          h('a.btn.icon', { attrs: { href: '/' } }, '✕'),
           h('button.btn', 'Login')
         ])
       ])

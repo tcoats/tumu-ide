@@ -2364,7 +2364,8 @@ inject('page:hosts', ql.component({
       hub.emit('refresh all');
     };
 
-    return h('div.wrapper', [h('h1', 'Choose host'), h('ul.select', Object.keys(state.hosts).map(function (host) {
+    document.title = "Hosts \xB7 Tumu";
+    return h('div.wrapper', [h('h1', 'Hosts'), h('ul.select', Object.keys(state.hosts).map(function (host) {
       var action = function action(e) {
         e.preventDefault();
         e.stopPropagation();
@@ -2373,9 +2374,10 @@ inject('page:hosts', ql.component({
 
       return h('li', h('a', {
         attrs: {
+          title: "Logged in as ".concat(state.hosts[host].emailAddress),
           href: "/host/".concat(encodeURIComponent(host), "/")
         }
-      }, ["".concat(host.split('://')[1], " \xB7 ").concat(state.hosts[host].emailAddress), h('div.action', {
+      }, ["".concat(host.split('://')[1]), h('div.action', {
         on: {
           click: action
         }
@@ -2448,7 +2450,7 @@ module.exports = function (host, token, callbacks) {
     }
   };
 };
-},{}],"workspaces.js":[function(require,module,exports) {
+},{}],"host.js":[function(require,module,exports) {
 var h = require('snabbdom/h').default;
 
 var ql = require('odoql2');
@@ -2489,11 +2491,11 @@ inject('pod', function (hub, exe) {
 });
 route('/host/:host/', function (p) {
   return {
-    page: 'workspaces',
+    page: 'host',
     host: p.params.host
   };
 });
-inject('page:workspaces', ql.component({
+inject('page:host', ql.component({
   query: function query(state, params) {
     var hosts = get('hosts', {});
     if (!hosts[params.host]) return {};
@@ -2508,6 +2510,8 @@ inject('page:workspaces', ql.component({
     if (!state.status) return inject.one('page:error')(state, {
       message: 'Host not found'
     }, hub);
+    var nicehost = params.host.split('://')[1];
+    document.title = "".concat(nicehost, " \xB7 Tumu");
 
     var refresh = function refresh(e) {
       e.preventDefault();
@@ -2523,9 +2527,10 @@ inject('page:workspaces', ql.component({
 
       return h('li', h('a', {
         attrs: {
+          title: "ID: ".concat(workspace.workspaceId),
           href: "/host/".concat(encodeURIComponent(params.host), "/workspace/").concat(workspace.workspaceId, "/")
         }
-      }, ["".concat(workspace.name, " \xB7 ").concat(workspace.workspaceId), h('div.action', {
+      }, ["".concat(workspace.name), h('div.action', {
         on: {
           click: action
         }
@@ -2545,7 +2550,7 @@ inject('page:workspaces', ql.component({
     }, '✕')])]);
   }
 }));
-},{"snabbdom/h":"../node_modules/snabbdom/h.js","odoql2":"../node_modules/odoql2/index.js","injectinto":"../node_modules/injectinto/inject.js","odo-route":"../node_modules/odo-route/index.js","./connection":"connection.js"}],"apps.js":[function(require,module,exports) {
+},{"snabbdom/h":"../node_modules/snabbdom/h.js","odoql2":"../node_modules/odoql2/index.js","injectinto":"../node_modules/injectinto/inject.js","odo-route":"../node_modules/odo-route/index.js","./connection":"connection.js"}],"workspace.js":[function(require,module,exports) {
 var h = require('snabbdom/h').default;
 
 var ql = require('odoql2');
@@ -2568,12 +2573,12 @@ var get = function get(key, value) {
 inject('pod', function (hub, exe) {});
 route('/host/:host/workspace/:workspace/', function (p) {
   return {
-    page: 'apps',
+    page: 'workspace',
     host: p.params.host,
     workspace: p.params.workspace
   };
 });
-inject('page:apps', ql.component({
+inject('page:workspace', ql.component({
   query: function query(state, params) {
     var hosts = get('hosts', {});
     if (!hosts[params.host]) return {};
@@ -2616,6 +2621,7 @@ inject('page:apps', ql.component({
     if (!workspace) return inject.one('page:error')(state, {
       message: 'Workspace not found'
     }, hub);
+    document.title = "".concat(workspace.name, " \xB7 Tumu");
 
     var refresh = function refresh(e) {
       e.preventDefault();
@@ -2631,9 +2637,10 @@ inject('page:apps', ql.component({
 
       return h('li', h('a', {
         attrs: {
+          title: "ID: ".concat(app.appId),
           href: "/host/".concat(encodeURIComponent(params.host), "/workspace/").concat(workspace.workspaceId, "/app/").concat(app.appId, "/")
         }
-      }, ["".concat(app.name, " \xB7 ").concat(app.appId), h('div.action', {
+      }, ["".concat(app.name), h('div.action', {
         on: {
           click: action
         }
@@ -13365,6 +13372,10 @@ inject('page:editor', ql.component({
         host: params.host,
         token: hosts[params.host].token,
         app: params.app
+      }),
+      status: ql.query('status', {
+        host: params.host,
+        token: hosts[params.host].token
       })
     };
   },
@@ -13377,6 +13388,63 @@ inject('page:editor', ql.component({
     if (code == null || code == undefined) return inject.one('page:error')(state, {
       message: 'App not found'
     }, hub);
+    var workspace = null;
+    var _iteratorNormalCompletion = true;
+    var _didIteratorError = false;
+    var _iteratorError = undefined;
+
+    try {
+      for (var _iterator = state.status.workspaces[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
+        var w = _step.value;
+        if (w.workspaceId == params.workspace) workspace = w;
+      }
+    } catch (err) {
+      _didIteratorError = true;
+      _iteratorError = err;
+    } finally {
+      try {
+        if (!_iteratorNormalCompletion && _iterator.return != null) {
+          _iterator.return();
+        }
+      } finally {
+        if (_didIteratorError) {
+          throw _iteratorError;
+        }
+      }
+    }
+
+    if (!workspace) return inject.one('page:error')(state, {
+      message: 'Workspace not found'
+    }, hub);
+    var app = null;
+    var _iteratorNormalCompletion2 = true;
+    var _didIteratorError2 = false;
+    var _iteratorError2 = undefined;
+
+    try {
+      for (var _iterator2 = workspace.apps[Symbol.iterator](), _step2; !(_iteratorNormalCompletion2 = (_step2 = _iterator2.next()).done); _iteratorNormalCompletion2 = true) {
+        var a = _step2.value;
+        if (a.appId == params.app) app = a;
+      }
+    } catch (err) {
+      _didIteratorError2 = true;
+      _iteratorError2 = err;
+    } finally {
+      try {
+        if (!_iteratorNormalCompletion2 && _iterator2.return != null) {
+          _iterator2.return();
+        }
+      } finally {
+        if (_didIteratorError2) {
+          throw _iteratorError2;
+        }
+      }
+    }
+
+    if (!app) return inject.one('page:error')(state, {
+      message: 'App not found'
+    }, hub);
+    document.title = "".concat(app.name, " \xB7 Tumu");
     var host = hosts[params.host];
 
     var upload = function upload(e) {
@@ -18766,7 +18834,7 @@ inject('pod', function (hub, exe) {
       socketError: function socketError(err) {
         socket.close();
         console.error(err);
-        if (err.message) alert(err.message);else alert('Error');
+        if (err.message) alert(err.message);else alert(JSON.stringify(err, Object.getOwnPropertyNames(err), 2));
       }
     });
   });
@@ -18786,20 +18854,18 @@ inject('pod', function (hub, exe) {
           emailAddress: params.emailAddress,
           token: token
         }).then(function () {
-          return hub.emit('select host', host);
-        }).then(function () {
-          return page('/');
+          return page("/host/".concat(encodeURIComponent(host), "/"));
         });
       },
       login_failure: function login_failure(err) {
         socket.close();
         console.error(err);
-        if (err.message) alert(err.message);else alert('Error');
+        if (err.message) alert(err.message);else alert(JSON.stringify(err, Object.getOwnPropertyNames(err), 2));
       },
       socketError: function socketError(err) {
         socket.close();
         console.error(err);
-        if (err.message) alert(err.message);else alert('Error');
+        if (err.message) alert(err.message);else alert(JSON.stringify(err, Object.getOwnPropertyNames(err), 2));
       }
     });
   });
@@ -18855,11 +18921,11 @@ inject('page:login', ql.component({
         props: {
           value: params.code || ''
         }
-      }), h('div.page-actions', [h('a.btn', {
+      }), h('div.page-actions', [h('a.btn.icon', {
         attrs: {
           href: '/'
         }
-      }, 'Cancel'), h('button.btn', {
+      }, '✕'), h('button.btn', {
         on: {
           click: loginCode
         }
@@ -18887,7 +18953,7 @@ inject('page:login', ql.component({
       });
     };
 
-    return h('div.wrapper', [h('h1', 'Connect to a tumu host'), h('form', {
+    return h('div.wrapper', [h('h1', 'Connect'), h('form', {
       on: {
         submit: login
       }
@@ -18910,11 +18976,11 @@ inject('page:login', ql.component({
         placeholder: 'e.g. bob@example.com',
         value: params.emailAddress
       }
-    }), h('div.page-actions', [h('a.btn', {
+    }), h('div.page-actions', [h('a.btn.icon', {
       attrs: {
         href: '/'
       }
-    }, 'Cancel'), h('button.btn', 'Login')])])]);
+    }, '✕'), h('button.btn', 'Login')])])]);
   }
 }));
 },{"snabbdom/h":"../node_modules/snabbdom/h.js","odoql2":"../node_modules/odoql2/index.js","injectinto":"../node_modules/injectinto/inject.js","odo-route":"../node_modules/odo-route/index.js","qrcode":"../node_modules/qrcode/lib/browser.js","page":"../node_modules/page/page.js","./connection":"connection.js","./fixhosturl":"fixhosturl.js"}],"error.js":[function(require,module,exports) {
@@ -20117,9 +20183,9 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 // extension points
 require('./hosts');
 
-require('./workspaces');
+require('./host');
 
-require('./apps');
+require('./workspace');
 
 require('./editor');
 
@@ -20237,5 +20303,5 @@ if (window.location.pathname == '/') {
     });
   }); // page.start({ dispatch: false })
 } else page();
-},{"./index.styl":"index.styl","./hosts":"hosts.js","./workspaces":"workspaces.js","./apps":"apps.js","./editor":"editor.js","./login":"login.js","./error":"error.js","snabbdom":"../node_modules/snabbdom/es/snabbdom.js","snabbdom/modules/class":"../node_modules/snabbdom/modules/class.js","snabbdom/modules/props":"../node_modules/snabbdom/modules/props.js","snabbdom/modules/attributes":"../node_modules/snabbdom/modules/attributes.js","snabbdom/modules/style":"../node_modules/snabbdom/modules/style.js","snabbdom/modules/eventlisteners":"../node_modules/snabbdom/modules/eventlisteners.js","odo-hub":"../node_modules/odo-hub/index.js","injectinto":"../node_modules/injectinto/inject.js","odoql2":"../node_modules/odoql2/index.js","odoql2/exe":"../node_modules/odoql2/exe.js","page":"../node_modules/page/page.js","odo-route":"../node_modules/odo-route/index.js"}]},{},["index.js"], null)
+},{"./index.styl":"index.styl","./hosts":"hosts.js","./host":"host.js","./workspace":"workspace.js","./editor":"editor.js","./login":"login.js","./error":"error.js","snabbdom":"../node_modules/snabbdom/es/snabbdom.js","snabbdom/modules/class":"../node_modules/snabbdom/modules/class.js","snabbdom/modules/props":"../node_modules/snabbdom/modules/props.js","snabbdom/modules/attributes":"../node_modules/snabbdom/modules/attributes.js","snabbdom/modules/style":"../node_modules/snabbdom/modules/style.js","snabbdom/modules/eventlisteners":"../node_modules/snabbdom/modules/eventlisteners.js","odo-hub":"../node_modules/odo-hub/index.js","injectinto":"../node_modules/injectinto/inject.js","odoql2":"../node_modules/odoql2/index.js","odoql2/exe":"../node_modules/odoql2/exe.js","page":"../node_modules/page/page.js","odo-route":"../node_modules/odo-route/index.js"}]},{},["index.js"], null)
 //# sourceMappingURL=/src.e31bb0bc.map

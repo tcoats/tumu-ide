@@ -66,6 +66,10 @@ inject('page:editor', ql.component({
         host: params.host,
         token: hosts[params.host].token,
         app: params.app
+      }),
+      status: ql.query('status', {
+        host: params.host,
+        token: hosts[params.host].token
       })
     }
   },
@@ -76,6 +80,19 @@ inject('page:editor', ql.component({
       return inject.one('page:error')(state, { message: 'Host not found' }, hub)
     if (code == null || code == undefined)
       return inject.one('page:error')(state, { message: 'App not found' }, hub)
+    let workspace = null
+    for (let w of state.status.workspaces)
+      if (w.workspaceId == params.workspace)
+        workspace = w
+    if (!workspace)
+      return inject.one('page:error')(state, { message: 'Workspace not found' }, hub)
+    let app = null
+    for (let a of workspace.apps)
+      if (a.appId == params.app)
+        app = a
+    if (!app)
+      return inject.one('page:error')(state, { message: 'App not found' }, hub)
+    document.title = `${app.name} · Tumu`
     const host = hosts[params.host]
     const upload = (e) => {
       e.preventDefault()

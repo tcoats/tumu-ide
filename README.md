@@ -18,24 +18,26 @@ yarn run deploy
 # Todo
 - [ ] Menu on left
 - [ ] Logs on right
-- [ ] Drag and drop file
-- [ ] Convert to lambda
 
-# Dashboard
+# CRUD
 - [ ] Create workspace
 - [ ] Delete workspace
 - [ ] Invite to workspace
 - [ ] Leave workspace
-
-# Workspace
 - [ ] Create app
 - [ ] Delete app
 - [ ] Enable app
 - [ ] Disable app
 - [ ] Set domain?
 
-# Code editor
-- [ ] Ctrl hotkeys for close and upload
+# Fixes
+- [ ] Improve host not found error message
+- [ ] Autoselect authenticator code box (need to set key?)
+
+# Ideas
+- [ ] Drag and drop file
+- [ ] Convert to lambda
+- [ ] Editor ctrl hotkey for upload
 
 # Workspace Phase II
 - [ ] Emoji icons per lambdas

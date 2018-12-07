@@ -48,16 +48,17 @@ inject('page:hosts', ql.component({
       e.preventDefault()
       hub.emit('refresh all')
     }
+    document.title = `Hosts · Tumu`
     return h('div.wrapper', [
-      h('h1', 'Choose host'),
+      h('h1', 'Hosts'),
       h('ul.select', Object.keys(state.hosts).map((host) => {
         const action = (e) => {
           e.preventDefault()
           e.stopPropagation()
           console.log('TODO: Host actions')
         }
-        return h('li', h('a', { attrs: { href: `/host/${encodeURIComponent(host)}/` }}, [
-          `${host.split('://')[1]} · ${state.hosts[host].emailAddress}`,
+        return h('li', h('a', { attrs: { title: `Logged in as ${state.hosts[host].emailAddress}`, href: `/host/${encodeURIComponent(host)}/` }}, [
+          `${host.split('://')[1]}`,
           h('div.action', { on: { click: action } }, '…')
         ]))
       })),
