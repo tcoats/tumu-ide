@@ -18,7 +18,8 @@ yarn run deploy
 # CRUD
 - [x] Logout
 - [x] Create workspace
-- [ ] Delete workspace
+- [x] Delete workspace
+- [x] Rename workspace
 - [ ] Invite to workspace
 - [ ] Leave workspace
 - [ ] Create app

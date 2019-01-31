@@ -8150,14 +8150,6 @@ inject('page:host', ql.component({
   }
 }));
 },{"snabbdom/h":"../node_modules/snabbdom/h.js","odoql2":"../node_modules/odoql2/index.js","injectinto":"../node_modules/injectinto/inject.js","odo-route":"../node_modules/odo-route/index.js","page":"../node_modules/page/page.js","./connection":"connection.js"}],"workspace.js":[function(require,module,exports) {
-function _toConsumableArray(arr) { return _arrayWithoutHoles(arr) || _iterableToArray(arr) || _nonIterableSpread(); }
-
-function _nonIterableSpread() { throw new TypeError("Invalid attempt to spread non-iterable instance"); }
-
-function _iterableToArray(iter) { if (Symbol.iterator in Object(iter) || Object.prototype.toString.call(iter) === "[object Arguments]") return Array.from(iter); }
-
-function _arrayWithoutHoles(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = new Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } }
-
 var h = require('snabbdom/h').default;
 
 var ql = require('odoql2');
@@ -8317,200 +8309,10 @@ inject('page:workspace', ql.component({
     }, hub);
     var host = state.hosts[params.host];
     document.title = "".concat(workspace.name, " \xB7 Tumu");
-    var article = null;
-
-    if (params.isrenameworkspace) {
-      var updateName = function updateName(e) {
-        hub.emit('update', {
-          name: e.target.value
-        });
-      };
-
-      var rename = function rename(e) {
-        e.preventDefault();
-        if (!params.name || params.name == workspace.name) return;
-        hub.emit('workspace rename', {
-          host: params.host,
-          token: host.token,
-          workspace: params.workspace,
-          name: params.name
-        });
-      };
-
-      article = h('article', [h('header', _toConsumableArray(!state.settings.nav ? [h('a.btn.icon', {
-        on: {
-          click: shownav
-        },
-        attrs: {
-          href: '#'
-        }
-      }, '⇥')] : []).concat([h('h1', "Rename ".concat(workspace.name))])), h('form', {
-        on: {
-          submit: rename
-        }
-      }, [h('label', 'Type workspace name to delete'), h('input', {
-        on: {
-          keyup: updateName
-        },
-        attrs: {
-          type: 'text',
-          autofocus: true
-        },
-        props: {
-          value: params.name || workspace.name
-        }
-      }), h('div.page-actions', [h('button.btn', {
-        on: {
-          click: rename
-        }
-      }, 'Rename')])])]);
-    } else if (params.isdeleteworkspace) {
-      var _updateName = function _updateName(e) {
-        hub.emit('update', {
-          name: e.target.value
-        });
-      };
-
-      var dothedelete = function dothedelete(e) {
-        e.preventDefault();
-        if (params.name != workspace.name) return;
-        hub.emit('workspace delete', {
-          host: params.host,
-          token: host.token,
-          workspace: params.workspace
-        });
-      };
-
-      article = h('article', [h('header', _toConsumableArray(!state.settings.nav ? [h('a.btn.icon', {
-        on: {
-          click: shownav
-        },
-        attrs: {
-          href: '#'
-        }
-      }, '⇥')] : []).concat([h('h1', "Really delete ".concat(workspace.name, "?"))])), h('form', {
-        on: {
-          submit: dothedelete
-        }
-      }, [h('label', 'Type workspace name to delete'), h('input', {
-        on: {
-          keyup: _updateName
-        },
-        attrs: {
-          type: 'text',
-          autofocus: true
-        },
-        props: {
-          value: params.name || ''
-        }
-      }), h('div.page-actions', [h('button.btn', {
-        on: {
-          click: dothedelete
-        }
-      }, 'Delete')])])]);
-    } else if (params.isleaveworkspace) {
-      article = h('article', [h('header', _toConsumableArray(!state.settings.nav ? [h('a.btn.icon', {
-        on: {
-          click: shownav
-        },
-        attrs: {
-          href: '#'
-        }
-      }, '⇥')] : []).concat([h('h1', "Really leave ".concat(workspace.name, "?"))]))]);
-    } else if (params.isinviteworkspace) {
-      article = h('article', [h('header', _toConsumableArray(!state.settings.nav ? [h('a.btn.icon', {
-        on: {
-          click: shownav
-        },
-        attrs: {
-          href: '#'
-        }
-      }, '⇥')] : []).concat([h('h1', "Invite someone to ".concat(workspace.name))]))]);
-    } else {
-      var renamestart = function renamestart(e) {
-        e.preventDefault();
-        hub.emit('update', {
-          isrenameworkspace: true
-        });
-      };
-
-      var deletestart = function deletestart(e) {
-        e.preventDefault();
-        hub.emit('update', {
-          isdeleteworkspace: true
-        });
-      };
-
-      var leavestart = function leavestart(e) {
-        e.preventDefault();
-        hub.emit('update', {
-          isleaveworkspace: true
-        });
-      };
-
-      var invitestart = function invitestart(e) {
-        e.preventDefault();
-        hub.emit('update', {
-          isinviteworkspace: true
-        });
-      };
-
-      article = h('article', [h('header', _toConsumableArray(!state.settings.nav ? [h('a.btn.icon', {
-        on: {
-          click: shownav
-        },
-        attrs: {
-          href: '#'
-        }
-      }, '⇥')] : []).concat([h('h1', "Settings for ".concat(workspace.name))])), h('h2', 'Actions'), h('p', h('a.btn', {
-        on: {
-          click: renamestart
-        },
-        attrs: {
-          href: '#'
-        }
-      }, 'Rename workspace')), h('p', h('a.btn', {
-        on: {
-          click: deletestart
-        },
-        attrs: {
-          href: '#'
-        }
-      }, 'Delete workspace')), h('p', h('a.btn', {
-        on: {
-          click: leavestart
-        },
-        attrs: {
-          href: '#'
-        }
-      }, 'Leave workspace')), h('p', h('a.btn', {
-        on: {
-          click: invitestart
-        },
-        attrs: {
-          href: '#'
-        }
-      }, 'Invite member')), h('h2', 'Members'), h('div', state.workspaceStatus.users.map(function (user) {
-        var remove = function remove(e) {
-          e.preventDefault();
-          console.log('remove user from workspace', user);
-        };
-
-        return h('p', [h('a.btn.icon', {
-          on: {
-            click: remove
-          },
-          attrs: {
-            href: '#'
-          }
-        }, '✕'), ' ', user.emailAddress]);
-      }))]);
-    }
-
-    var refresh = function refresh(e) {
-      e.preventDefault();
-      hub.emit('refresh all');
-    };
+    var childparams = Object.assign({}, params, {
+      workspace: workspace,
+      host: host
+    });
 
     var hidenav = function hidenav(e) {
       e.preventDefault();
@@ -8528,6 +8330,11 @@ inject('page:workspace', ql.component({
       }).then(function () {
         return hub.emit('update');
       });
+    };
+
+    var refresh = function refresh(e) {
+      e.preventDefault();
+      hub.emit('refresh all');
     };
 
     return h('div.wrapper', {
@@ -8568,10 +8375,331 @@ inject('page:workspace', ql.component({
       attrs: {
         href: '#'
       }
-    }, '⇤')])]), article]);
+    }, '⇤')])]), inject.one(params.section ? "section:workspace:".concat(params.section) : 'section:workspace:settings')(state, childparams, hub)]);
   }
 }));
-},{"snabbdom/h":"../node_modules/snabbdom/h.js","odoql2":"../node_modules/odoql2/index.js","injectinto":"../node_modules/injectinto/inject.js","odo-route":"../node_modules/odo-route/index.js","page":"../node_modules/page/page.js","./connection":"connection.js"}],"canvas.js":[function(require,module,exports) {
+},{"snabbdom/h":"../node_modules/snabbdom/h.js","odoql2":"../node_modules/odoql2/index.js","injectinto":"../node_modules/injectinto/inject.js","odo-route":"../node_modules/odo-route/index.js","page":"../node_modules/page/page.js","./connection":"connection.js"}],"workspace-settings.js":[function(require,module,exports) {
+function _toConsumableArray(arr) { return _arrayWithoutHoles(arr) || _iterableToArray(arr) || _nonIterableSpread(); }
+
+function _nonIterableSpread() { throw new TypeError("Invalid attempt to spread non-iterable instance"); }
+
+function _iterableToArray(iter) { if (Symbol.iterator in Object(iter) || Object.prototype.toString.call(iter) === "[object Arguments]") return Array.from(iter); }
+
+function _arrayWithoutHoles(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = new Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } }
+
+var h = require('snabbdom/h').default;
+
+var ql = require('odoql2');
+
+var inject = require('injectinto');
+
+inject('section:workspace:settings', ql.component({
+  render: function render(state, params, hub) {
+    var renamestart = function renamestart(e) {
+      e.preventDefault();
+      hub.emit('update', {
+        section: 'rename'
+      });
+    };
+
+    var deletestart = function deletestart(e) {
+      e.preventDefault();
+      hub.emit('update', {
+        section: 'delete'
+      });
+    };
+
+    var leavestart = function leavestart(e) {
+      e.preventDefault();
+      hub.emit('update', {
+        section: 'leave'
+      });
+    };
+
+    var invitestart = function invitestart(e) {
+      e.preventDefault();
+      hub.emit('update', {
+        section: 'invite'
+      });
+    };
+
+    var shownav = function shownav(e) {
+      e.preventDefault();
+      hub.emit('update settings', {
+        nav: true
+      }).then(function () {
+        return hub.emit('update');
+      });
+    };
+
+    return h('article', [h('header', _toConsumableArray(!state.settings.nav ? [h('a.btn.icon', {
+      on: {
+        click: shownav
+      },
+      attrs: {
+        href: '#'
+      }
+    }, '⇥')] : []).concat([h('h1', "Settings for ".concat(params.workspace.name))])), h('h2', 'Actions'), h('p', h('a.btn', {
+      on: {
+        click: renamestart
+      },
+      attrs: {
+        href: '#'
+      }
+    }, 'Rename workspace')), h('p', h('a.btn', {
+      on: {
+        click: deletestart
+      },
+      attrs: {
+        href: '#'
+      }
+    }, 'Delete workspace')), h('p', h('a.btn', {
+      on: {
+        click: leavestart
+      },
+      attrs: {
+        href: '#'
+      }
+    }, 'Leave workspace')), h('p', h('a.btn', {
+      on: {
+        click: invitestart
+      },
+      attrs: {
+        href: '#'
+      }
+    }, 'Invite member')), h('h2', 'Members'), h('div', state.workspaceStatus.users.map(function (user) {
+      var remove = function remove(e) {
+        e.preventDefault();
+        console.log('remove user from workspace', user);
+      };
+
+      return h('p', [h('a.btn.icon', {
+        on: {
+          click: remove
+        },
+        attrs: {
+          href: '#'
+        }
+      }, '✕'), ' ', user.emailAddress]);
+    }))]);
+  }
+}));
+},{"snabbdom/h":"../node_modules/snabbdom/h.js","odoql2":"../node_modules/odoql2/index.js","injectinto":"../node_modules/injectinto/inject.js"}],"workspace-rename.js":[function(require,module,exports) {
+function _toConsumableArray(arr) { return _arrayWithoutHoles(arr) || _iterableToArray(arr) || _nonIterableSpread(); }
+
+function _nonIterableSpread() { throw new TypeError("Invalid attempt to spread non-iterable instance"); }
+
+function _iterableToArray(iter) { if (Symbol.iterator in Object(iter) || Object.prototype.toString.call(iter) === "[object Arguments]") return Array.from(iter); }
+
+function _arrayWithoutHoles(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = new Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } }
+
+var h = require('snabbdom/h').default;
+
+var ql = require('odoql2');
+
+var inject = require('injectinto');
+
+inject('section:workspace:rename', ql.component({
+  render: function render(state, params, hub) {
+    var updateName = function updateName(e) {
+      hub.emit('update', {
+        name: e.target.value
+      });
+    };
+
+    var rename = function rename(e) {
+      e.preventDefault();
+      if (!params.name || params.name == params.workspace.name) return;
+      hub.emit('workspace rename', {
+        host: params.host.host,
+        token: params.host.token,
+        workspace: params.workspace,
+        name: params.name
+      });
+    };
+
+    var shownav = function shownav(e) {
+      e.preventDefault();
+      hub.emit('update settings', {
+        nav: true
+      }).then(function () {
+        return hub.emit('update');
+      });
+    };
+
+    return h('article', [h('header', _toConsumableArray(!state.settings.nav ? [h('a.btn.icon', {
+      on: {
+        click: shownav
+      },
+      attrs: {
+        href: '#'
+      }
+    }, '⇥')] : []).concat([h('h1', "Rename ".concat(params.workspace.name))])), h('form', {
+      on: {
+        submit: rename
+      }
+    }, [h('label', 'Type workspace name to delete'), h('input', {
+      on: {
+        keyup: updateName
+      },
+      attrs: {
+        type: 'text',
+        autofocus: true
+      },
+      props: {
+        value: params.name || params.workspace.name
+      }
+    }), h('div.page-actions', [h('button.btn', {
+      on: {
+        click: rename
+      }
+    }, 'Rename')])])]);
+  }
+}));
+},{"snabbdom/h":"../node_modules/snabbdom/h.js","odoql2":"../node_modules/odoql2/index.js","injectinto":"../node_modules/injectinto/inject.js"}],"workspace-delete.js":[function(require,module,exports) {
+function _toConsumableArray(arr) { return _arrayWithoutHoles(arr) || _iterableToArray(arr) || _nonIterableSpread(); }
+
+function _nonIterableSpread() { throw new TypeError("Invalid attempt to spread non-iterable instance"); }
+
+function _iterableToArray(iter) { if (Symbol.iterator in Object(iter) || Object.prototype.toString.call(iter) === "[object Arguments]") return Array.from(iter); }
+
+function _arrayWithoutHoles(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = new Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } }
+
+var h = require('snabbdom/h').default;
+
+var ql = require('odoql2');
+
+var inject = require('injectinto');
+
+inject('section:workspace:delete', ql.component({
+  render: function render(state, params, hub) {
+    var shownav = function shownav(e) {
+      e.preventDefault();
+      hub.emit('update settings', {
+        nav: true
+      }).then(function () {
+        return hub.emit('update');
+      });
+    };
+
+    var updateName = function updateName(e) {
+      hub.emit('update', {
+        name: e.target.value
+      });
+    };
+
+    var dothedelete = function dothedelete(e) {
+      e.preventDefault();
+      if (params.name != params.workspace.name) return;
+      hub.emit('workspace delete', {
+        host: params.host.hosr,
+        token: params.host.token,
+        workspace: params.workspace
+      });
+    };
+
+    return h('article', [h('header', _toConsumableArray(!state.settings.nav ? [h('a.btn.icon', {
+      on: {
+        click: shownav
+      },
+      attrs: {
+        href: '#'
+      }
+    }, '⇥')] : []).concat([h('h1', "Really delete ".concat(params.workspace.name, "?"))])), h('form', {
+      on: {
+        submit: dothedelete
+      }
+    }, [h('label', 'Type workspace name to delete'), h('input', {
+      on: {
+        keyup: updateName
+      },
+      attrs: {
+        type: 'text',
+        autofocus: true
+      },
+      props: {
+        value: params.name || ''
+      }
+    }), h('div.page-actions', [h('button.btn', {
+      on: {
+        click: dothedelete
+      }
+    }, 'Delete')])])]);
+  }
+}));
+},{"snabbdom/h":"../node_modules/snabbdom/h.js","odoql2":"../node_modules/odoql2/index.js","injectinto":"../node_modules/injectinto/inject.js"}],"workspace-invite.js":[function(require,module,exports) {
+function _toConsumableArray(arr) { return _arrayWithoutHoles(arr) || _iterableToArray(arr) || _nonIterableSpread(); }
+
+function _nonIterableSpread() { throw new TypeError("Invalid attempt to spread non-iterable instance"); }
+
+function _iterableToArray(iter) { if (Symbol.iterator in Object(iter) || Object.prototype.toString.call(iter) === "[object Arguments]") return Array.from(iter); }
+
+function _arrayWithoutHoles(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = new Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } }
+
+var h = require('snabbdom/h').default;
+
+var ql = require('odoql2');
+
+var inject = require('injectinto');
+
+inject('section:workspace:invite', ql.component({
+  render: function render(state, params, hub) {
+    var shownav = function shownav(e) {
+      e.preventDefault();
+      hub.emit('update settings', {
+        nav: true
+      }).then(function () {
+        return hub.emit('update');
+      });
+    };
+
+    return h('article', [h('header', _toConsumableArray(!state.settings.nav ? [h('a.btn.icon', {
+      on: {
+        click: shownav
+      },
+      attrs: {
+        href: '#'
+      }
+    }, '⇥')] : []).concat([h('h1', "Invite someone to ".concat(params.workspace.name))]))]);
+  }
+}));
+},{"snabbdom/h":"../node_modules/snabbdom/h.js","odoql2":"../node_modules/odoql2/index.js","injectinto":"../node_modules/injectinto/inject.js"}],"workspace-leave.js":[function(require,module,exports) {
+function _toConsumableArray(arr) { return _arrayWithoutHoles(arr) || _iterableToArray(arr) || _nonIterableSpread(); }
+
+function _nonIterableSpread() { throw new TypeError("Invalid attempt to spread non-iterable instance"); }
+
+function _iterableToArray(iter) { if (Symbol.iterator in Object(iter) || Object.prototype.toString.call(iter) === "[object Arguments]") return Array.from(iter); }
+
+function _arrayWithoutHoles(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = new Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } }
+
+var h = require('snabbdom/h').default;
+
+var ql = require('odoql2');
+
+var inject = require('injectinto');
+
+inject('section:workspace:leave', ql.component({
+  render: function render(state, params, hub) {
+    var shownav = function shownav(e) {
+      e.preventDefault();
+      hub.emit('update settings', {
+        nav: true
+      }).then(function () {
+        return hub.emit('update');
+      });
+    };
+
+    return h('article', [h('header', _toConsumableArray(!state.settings.nav ? [h('a.btn.icon', {
+      on: {
+        click: shownav
+      },
+      attrs: {
+        href: '#'
+      }
+    }, '⇥')] : []).concat([h('h1', "Really leave ".concat(params.workspace.name, "?"))]))]);
+  }
+}));
+},{"snabbdom/h":"../node_modules/snabbdom/h.js","odoql2":"../node_modules/odoql2/index.js","injectinto":"../node_modules/injectinto/inject.js"}],"canvas.js":[function(require,module,exports) {
 function _toConsumableArray(arr) { return _arrayWithoutHoles(arr) || _iterableToArray(arr) || _nonIterableSpread(); }
 
 function _nonIterableSpread() { throw new TypeError("Invalid attempt to spread non-iterable instance"); }
@@ -20917,6 +21045,16 @@ require('./host');
 
 require('./workspace');
 
+require('./workspace-settings');
+
+require('./workspace-rename');
+
+require('./workspace-delete');
+
+require('./workspace-invite');
+
+require('./workspace-leave');
+
 require('./canvas');
 
 require('./editor');
@@ -21039,5 +21177,5 @@ if (window.location.pathname == '/') {
     });
   }); // page.start({ dispatch: false })
 } else page();
-},{"./index.styl":"index.styl","./hosts":"hosts.js","./host":"host.js","./workspace":"workspace.js","./canvas":"canvas.js","./editor":"editor.js","./error":"error.js","./settings":"settings.js","snabbdom":"../node_modules/snabbdom/es/snabbdom.js","snabbdom/modules/class":"../node_modules/snabbdom/modules/class.js","snabbdom/modules/props":"../node_modules/snabbdom/modules/props.js","snabbdom/modules/attributes":"../node_modules/snabbdom/modules/attributes.js","snabbdom/modules/style":"../node_modules/snabbdom/modules/style.js","snabbdom/modules/eventlisteners":"../node_modules/snabbdom/modules/eventlisteners.js","odo-hub":"../node_modules/odo-hub/index.js","injectinto":"../node_modules/injectinto/inject.js","odoql2":"../node_modules/odoql2/index.js","odoql2/exe":"../node_modules/odoql2/exe.js","page":"../node_modules/page/page.js","odo-route":"../node_modules/odo-route/index.js"}]},{},["index.js"], null)
+},{"./index.styl":"index.styl","./hosts":"hosts.js","./host":"host.js","./workspace":"workspace.js","./workspace-settings":"workspace-settings.js","./workspace-rename":"workspace-rename.js","./workspace-delete":"workspace-delete.js","./workspace-invite":"workspace-invite.js","./workspace-leave":"workspace-leave.js","./canvas":"canvas.js","./editor":"editor.js","./error":"error.js","./settings":"settings.js","snabbdom":"../node_modules/snabbdom/es/snabbdom.js","snabbdom/modules/class":"../node_modules/snabbdom/modules/class.js","snabbdom/modules/props":"../node_modules/snabbdom/modules/props.js","snabbdom/modules/attributes":"../node_modules/snabbdom/modules/attributes.js","snabbdom/modules/style":"../node_modules/snabbdom/modules/style.js","snabbdom/modules/eventlisteners":"../node_modules/snabbdom/modules/eventlisteners.js","odo-hub":"../node_modules/odo-hub/index.js","injectinto":"../node_modules/injectinto/inject.js","odoql2":"../node_modules/odoql2/index.js","odoql2/exe":"../node_modules/odoql2/exe.js","page":"../node_modules/page/page.js","odo-route":"../node_modules/odo-route/index.js"}]},{},["index.js"], null)
 //# sourceMappingURL=/src.e31bb0bc.map

@@ -111,150 +111,10 @@ inject('page:workspace', ql.component({
       return inject.one('page:error')(state, { message: 'Workspace not found' }, hub)
     const host = state.hosts[params.host]
     document.title = `${workspace.name} · Tumu`
-    let article = null
-    if (params.isrenameworkspace) {
-      const updateName = (e) => {
-        hub.emit('update', { name: e.target.value })
-      }
-      const rename = (e) => {
-        e.preventDefault()
-        if (!params.name || params.name == workspace.name) return
-        hub.emit('workspace rename', {
-          host: params.host,
-          token: host.token,
-          workspace: params.workspace,
-          name: params.name
-        })
-      }
-      article = h('article', [
-        h('header', [
-          ...(!state.settings.nav
-            ? [h('a.btn.icon', { on: { click: shownav }, attrs: { href: '#' } }, '⇥')]
-            : []
-          ),
-          h('h1', `Rename ${workspace.name}`)
-        ]),
-        h('form', { on: { submit: rename } }, [
-          h('label', 'Type workspace name to delete'),
-          h('input', {
-            on: { keyup: updateName },
-            attrs: {
-              type: 'text',
-              autofocus: true
-            },
-            props: { value: params.name || workspace.name }}),
-          h('div.page-actions', [
-            h('button.btn', { on: { click: rename } }, 'Rename')
-          ])
-        ])
-      ])
-    }
-    else if (params.isdeleteworkspace) {
-      const updateName = (e) => {
-        hub.emit('update', { name: e.target.value })
-      }
-      const dothedelete = (e) => {
-        e.preventDefault()
-        if (params.name != workspace.name) return
-        hub.emit('workspace delete', {
-          host: params.host,
-          token: host.token,
-          workspace: params.workspace
-        })
-      }
-      article = h('article', [
-        h('header', [
-          ...(!state.settings.nav
-            ? [h('a.btn.icon', { on: { click: shownav }, attrs: { href: '#' } }, '⇥')]
-            : []
-          ),
-          h('h1', `Really delete ${workspace.name}?`)
-        ]),
-        h('form', { on: { submit: dothedelete } }, [
-          h('label', 'Type workspace name to delete'),
-          h('input', {
-            on: { keyup: updateName },
-            attrs: {
-              type: 'text',
-              autofocus: true
-            },
-            props: { value: params.name || '' }}),
-          h('div.page-actions', [
-            h('button.btn', { on: { click: dothedelete } }, 'Delete')
-          ])
-        ])
-      ])
-    }
-    else if (params.isleaveworkspace) {
-      article = h('article', [
-        h('header', [
-          ...(!state.settings.nav
-            ? [h('a.btn.icon', { on: { click: shownav }, attrs: { href: '#' } }, '⇥')]
-            : []
-          ),
-          h('h1', `Really leave ${workspace.name}?`)
-        ])
-      ])
-    }
-    else if (params.isinviteworkspace) {
-      article = h('article', [
-        h('header', [
-          ...(!state.settings.nav
-            ? [h('a.btn.icon', { on: { click: shownav }, attrs: { href: '#' } }, '⇥')]
-            : []
-          ),
-          h('h1', `Invite someone to ${workspace.name}`)
-        ])
-      ])
-    }
-    else {
-      const renamestart = (e) => {
-        e.preventDefault()
-        hub.emit('update', { isrenameworkspace: true })
-      }
-      const deletestart = (e) => {
-        e.preventDefault()
-        hub.emit('update', { isdeleteworkspace: true })
-      }
-      const leavestart = (e) => {
-        e.preventDefault()
-        hub.emit('update', { isleaveworkspace: true })
-      }
-      const invitestart = (e) => {
-        e.preventDefault()
-        hub.emit('update', { isinviteworkspace: true })
-      }
-      article = h('article', [
-        h('header', [
-          ...(!state.settings.nav
-            ? [h('a.btn.icon', { on: { click: shownav }, attrs: { href: '#' } }, '⇥')]
-            : []
-          ),
-          h('h1', `Settings for ${workspace.name}`)
-        ]),
-        h('h2', 'Actions'),
-        h('p', h('a.btn', { on: { click: renamestart }, attrs: { href: '#' } }, 'Rename workspace')),
-        h('p', h('a.btn', { on: { click: deletestart }, attrs: { href: '#' } }, 'Delete workspace')),
-        h('p', h('a.btn', { on: { click: leavestart }, attrs: { href: '#' } }, 'Leave workspace')),
-        h('p', h('a.btn', { on: { click: invitestart }, attrs: { href: '#' } }, 'Invite member')),
-        h('h2', 'Members'),
-        h('div', state.workspaceStatus.users.map((user) => {
-          const remove = (e) => {
-            e.preventDefault()
-            console.log('remove user from workspace', user)
-          }
-          return h('p', [
-            h('a.btn.icon', { on: { click: remove }, attrs: { href: '#' } }, '✕'),
-            ' ',
-            user.emailAddress
-          ])
-        }))
-      ])
-    }
-    const refresh = (e) => {
-      e.preventDefault()
-      hub.emit('refresh all')
-    }
+    const childparams = Object.assign({}, params, {
+      workspace: workspace,
+      host: host
+    })
     const hidenav = (e) => {
       e.preventDefault()
       hub.emit('update settings', { nav: false })
@@ -264,6 +124,10 @@ inject('page:workspace', ql.component({
       e.preventDefault()
       hub.emit('update settings', { nav: true })
         .then(() => hub.emit('update'))
+    }
+    const refresh = (e) => {
+      e.preventDefault()
+      hub.emit('refresh all')
     }
     return h('div.wrapper', { class: { 'nav-off': !state.settings.nav } }, [
       h('nav', [
@@ -283,7 +147,9 @@ inject('page:workspace', ql.component({
           h('a.btn.icon', { on: { click: hidenav }, attrs: { href: '#' } }, '⇤')
         ])
       ]),
-      article
+      (inject.one(params.section
+       ?`section:workspace:${params.section}`
+       : 'section:workspace:settings'))(state, childparams, hub)
     ])
   }
 }))
